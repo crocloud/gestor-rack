@@ -18,7 +18,7 @@
         body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; margin: 0; padding: 20px; }
         .container { max-width: 1400px; margin: auto; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         h1 { color: #0a2472; border-bottom: 3px solid #0a2472; margin-top: 0; }
-        h2 { background: #e9ecef; padding: 8px 15px; border-radius: 8px; margin-top: 25px; font-size: 1.3rem; cursor: pointer; user-select: none; }
+        h2 { background: #e9ecef; padding: 8px 15px; border-radius: 8px; margin-top: 25px; font-size: 1.3rem; cursor: pointer; user-select: none; margin-bottom: 10px; }
         h2:hover { background: #dce3ec; }
         .toolbar { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
         .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -43,8 +43,6 @@
         .remove-row, .remove-row-patch, .remove-row-alim { background: #dc3545; font-size: 0.7rem; padding: 2px 8px; }
         #userInfo { font-size: 0.8rem; font-weight: bold; }
         footer { text-align: center; margin-top: 30px; font-size: 0.75rem; color: #6c757d; }
-        
-        /* Esquema visual del rack */
         .rack-schema { background: #2c3e50; border-radius: 16px; padding: 20px; margin: 15px 0; border: 2px solid #1a252f; }
         .rack-title { color: white; text-align: center; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; }
         .rack-grid { display: flex; flex-direction: column-reverse; border: 3px solid #7f8c8d; border-radius: 8px; overflow: hidden; background: #34495e; }
@@ -59,22 +57,16 @@
         .legend-color { display: inline-block; width: 16px; height: 16px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
         .collapsible-content { display: block; }
         .collapsed .collapsible-content { display: none; }
-        
-        /* Galería de imágenes */
-        .galeria-img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
+        .galeria-img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; margin: 5px; border: 2px solid transparent; }
         .galeria-img:hover { transform: scale(1.05); border-color: #0a2472; }
-        
-        /* Notificaciones flotantes */
         .notification { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: 8px; color: white; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.2); animation: slideIn 0.3s ease; }
         .notification.success { background: #28a745; }
         .notification.error { background: #dc3545; }
         .notification.info { background: #0a2472; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
-        /* Barra de búsqueda */
         .search-bar { background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; }
         .qr-container { display: inline-block; margin: 5px; text-align: center; }
-        canvas { max-width: 100%; height: auto; background: #fff; border-radius: 8px; margin: 10px 0; }
+        canvas { max-width: 100%; height: auto; background: #f8f9fa; border-radius: 8px; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -110,6 +102,18 @@
         <div class="flex-item"><label>🟢 Estado:</label> <select id="estadoProyecto"><option>En planificación</option><option>En ejecución</option><option>Completado</option></select></div>
     </div>
 
+    <!-- Datos del Rack -->
+    <div class="flex-row">
+        <div class="flex-item"><label>📍 Ubicación:</label> <input type="text" id="ubicacion" placeholder="Ej: Planta 2"></div>
+        <div class="flex-item"><label>🔢 Rack ID:</label> <input type="text" id="rackId" placeholder="Ej: R01"></div>
+        <div class="flex-item"><label>📐 Tipo:</label> <select id="tipoRack"><option>Abierto</option><option>Cerrado</option><option>Gabinete</option></select></div>
+    </div>
+    <div class="flex-row">
+        <div class="flex-item"><label>📏 Medidas:</label> <input type="text" id="medidas" placeholder="Ej: 600x2000mm"></div>
+        <div class="flex-item"><label>📊 Unidades U:</label> <input type="text" id="unidadesU" placeholder="Ej: 42U"></div>
+        <div class="flex-item"><label>❄️ Refrigeración:</label> <select id="refri"><option>Sí</option><option>No</option></select></div>
+    </div>
+
     <!-- Gráfico estadístico -->
     <h2 onclick="toggleCollapse(this)">📊 ESTADÍSTICAS ▼</h2>
     <div class="collapsible-content">
@@ -122,34 +126,39 @@
     <div class="collapsible-content">
         <div id="rackContainer" class="rack-schema"></div>
         <div style="display: flex; gap: 10px; margin: 10px 0;">
-            <button id="crearEquipoDesdeRack" class="btn-success" style="font-size: 0.8rem;">➕ Crear equipo desde esquema</button>
+            <button id="crearEquipoDesdeRack" class="btn-success">➕ Crear equipo desde esquema</button>
             <button id="sincronizarEquipos" style="background:#3498db;">🔄 Sincronizar con tabla</button>
         </div>
         <div class="rack-legend">
             <span><span class="legend-color" style="background:#ecf0f1;"></span> Equipo OK</span>
             <span><span class="legend-color" style="background:#f5c6cb;"></span> Equipo Error</span>
             <span><span class="legend-color" style="background:#fdfefe; border:1px solid #95a5a6;"></span> Vacío</span>
-            <span><span class="legend-color" style="background:#0a2472;"></span> Clic en equipo → Editar</span>
         </div>
     </div>
 
-    <!-- Búsqueda y filtros -->
-    <h2 onclick="toggleCollapse(this)">🖥️ EQUIPOS (Tabla) ▼</h2>
+    <!-- Búsqueda y equipos -->
+    <h2 onclick="toggleCollapse(this)">🖥️ EQUIPOS ▼</h2>
     <div class="collapsible-content">
         <div class="search-bar">
             <div class="flex-row">
-                <div class="flex-item"><input type="text" id="buscarEquipo" placeholder="🔍 Buscar por nombre o modelo..."></div>
-                <div class="flex-item"><select id="filtroEstado"><option value="">Todos los estados</option><option>OK</option><option>Error</option></select></div>
-                <div class="flex-item"><button id="aplicarFiltro" style="background:#3498db;">🔎 Filtrar</button></div>
+                <div class="flex-item"><input type="text" id="buscarEquipo" placeholder="🔍 Buscar..."></div>
+                <div class="flex-item"><select id="filtroEstado"><option value="">Todos</option><option>OK</option><option>Error</option></select></div>
+                <button id="aplicarFiltro" style="background:#3498db;">Filtrar</button>
             </div>
         </div>
-        <table id="tablaEquipos"><thead><tr><th>Nº</th><th>Equipo</th><th>Modelo</th><th>Nº Serie</th><th>Posición U</th><th>Estado</th><th>QR</th><th></th></tr></thead><tbody></tbody>能有
+        <table id="tablaEquipos">
+            <thead><tr><th>Nº</th><th>Equipo</th><th>Modelo</th><th>Nº Serie</th><th>Posición U</th><th>Estado</th><th>QR</th><th></th></tr></thead>
+            <tbody></tbody>
+        </table>
         <button id="addEquipo" class="add-row-btn">➕ Añadir equipo</button>
     </div>
 
     <h2 onclick="toggleCollapse(this)">🔌 PATCHING ▼</h2>
     <div class="collapsible-content">
-        <table id="tablaPatching"><thead><tr><th>Puerto PP</th><th>Puerto Switch</th><th>VLAN</th><th>Color</th><th>Observaciones</th><th></th></tr></thead><tbody></tbody>能有
+        <table id="tablaPatching">
+            <thead><tr><th>Puerto PP</th><th>Puerto Switch</th><th>VLAN</th><th>Color</th><th>Observaciones</th><th></th></tr></thead>
+            <tbody></tbody>
+        </table>
         <button id="addPatch" class="add-row-btn">➕ Añadir conexión</button>
     </div>
 
@@ -159,27 +168,28 @@
             <div class="flex-item"><label>Nº PDUs:</label> <input type="text" id="numPDU"></div>
             <div class="flex-item"><label>Redundante:</label> <select id="redundante"><option>No</option><option>Sí</option></select></div>
         </div>
-        <table id="tablaAlimentacion"><thead><tr><th>Equipo</th><th>UPS</th><th>Fase</th><th>Observaciones</th><th></th></tr></thead><tbody></tbody>能有
-        <button id="addAlim" class="add-row-btn">➕ Añadir alimentación</button>
+        <table id="tablaAlimentacion">
+            <thead><tr><th>Equipo</th><th>UPS</th><th>Fase</th><th>Observaciones</th><th></th></tr></thead>
+            <tbody></tbody>
+        </table>
+        <button id="addAlim" class="add-row-btn">➕ Añadir</button>
     </div>
 
-    <!-- Galería de imágenes -->
-    <h2 onclick="toggleCollapse(this)">📷 GALERÍA DE IMÁGENES ▼</h2>
+    <h2 onclick="toggleCollapse(this)">📷 GALERÍA ▼</h2>
     <div class="collapsible-content">
         <div class="photo-area">
             <input type="file" id="subirImagenes" accept="image/*" multiple>
-            <div id="galeriaPreview" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;"></div>
+            <div id="galeriaPreview" style="display: flex; flex-wrap: wrap; margin-top: 15px;"></div>
         </div>
     </div>
 
-    <!-- Historial de cambios -->
-    <h2 onclick="toggleCollapse(this)">📜 HISTORIAL DE CAMBIOS ▼</h2>
+    <h2 onclick="toggleCollapse(this)">📜 HISTORIAL ▼</h2>
     <div class="collapsible-content">
         <table id="tablaHistorial">
             <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead>
             <tbody></tbody>
         </table>
-        <button id="limpiarHistorial" class="btn-danger">🗑️ Limpiar historial</button>
+        <button id="limpiarHistorial" class="btn-danger">🗑️ Limpiar</button>
     </div>
 
     <h2 onclick="toggleCollapse(this)">✅ VERIFICACIONES ▼</h2>
@@ -190,12 +200,12 @@
                 <tr><td>Conectividad mismo rack</td><td><select><option>OK</option><option>NOK</option></select></td><td><input></td></tr>
                 <tr><td>Conectividad otros racks</td><td><select><option>OK</option><option>NOK</option></select></td><td><input></td></tr>
                 <tr><td>LEDs switches</td><td><select><option>OK</option><option>NOK</option></select></td><td><input></td></tr>
-                <tr><td>Temperatura interior</td><td><input placeholder="°C"></td><td><input></td></tr>
+                <tr><td>Temperatura</td><td><input placeholder="°C"></td><td><input></td></tr>
             </tbody>
         </table>
     </div>
 
-    <h2 onclick="toggleCollapse(this)">📝 INCIDENCIAS / NOTAS ▼</h2>
+    <h2 onclick="toggleCollapse(this)">📝 INCIDENCIAS ▼</h2>
     <div class="collapsible-content">
         <textarea rows="3" id="incidencias" style="width:100%" placeholder="Registro de cambios..."></textarea>
     </div>
@@ -210,11 +220,12 @@
         <button id="generarExcel">📊 Excel</button>
         <button id="generarWord">📝 Word</button>
     </div>
-    <footer>🔐 Con Google Sheets. Backup automático diario. Todas las mejoras integradas.</footer>
+    <footer>🔐 Con Google Sheets. Backup automático diario.</footer>
 </div>
 
 <script>
     // ============= CONFIGURACIÓN =============
+    // ⚠️ REEMPLAZA CON TUS CREDENCIALES REALES ⚠️
     const API_KEY = 'AIzaSyB9kHrNJXmQvCF7PMifJiInA2NB5Q1Jnno';
     const CLIENT_ID = '705581030720-42ofnt76tittia0cp6h1786mjgujtnb9.apps.googleusercontent.com';
     const DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4", "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
@@ -239,7 +250,7 @@
         let historial = JSON.parse(localStorage.getItem('rack_historial') || '[]');
         historial.unshift({
             fecha: new Date().toLocaleString(),
-            usuario: document.getElementById('tecnico').value || 'usuario',
+            usuario: document.getElementById('tecnico')?.value || 'usuario',
             accion: accion,
             detalle: detalle
         });
@@ -251,12 +262,13 @@
     function renderHistorial() {
         let historial = JSON.parse(localStorage.getItem('rack_historial') || '[]');
         let tbody = document.querySelector('#tablaHistorial tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        historial.forEach(h => {
-            let row = tbody.insertRow();
-            row.innerHTML = `<td>${h.fecha}</td><td>${h.usuario}</td><td>${h.accion}</td><td>${h.detalle}</td>`;
-        });
+        if (tbody) {
+            tbody.innerHTML = '';
+            historial.forEach(h => {
+                let row = tbody.insertRow();
+                row.innerHTML = `<td>${h.fecha}</td><td>${h.usuario}</td><td>${h.accion}</td><td>${h.detalle}</td>`;
+            });
+        }
     }
 
     // ============= GRÁFICOS =============
@@ -268,9 +280,7 @@
         const ok = equipos.filter(r => r.cells[5]?.querySelector('select')?.value === 'OK').length;
         const error = equipos.filter(r => r.cells[5]?.querySelector('select')?.value === 'Error').length;
         const total = ok + error || 1;
-        
-        canvas.width = 400;
-        canvas.height = 150;
+        canvas.width = 400; canvas.height = 150;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#28a745';
         ctx.fillRect(0, 0, (ok / total) * canvas.width, 40);
@@ -280,103 +290,76 @@
         ctx.font = '12px Arial';
         ctx.fillText(`✅ OK: ${ok} (${Math.round(ok/total*100)}%)`, 10, 25);
         ctx.fillText(`❌ Error: ${error} (${Math.round(error/total*100)}%)`, 10, 55);
-        
-        document.getElementById('resumenEstadisticas').innerHTML = `📊 Total equipos: ${total} | OK: ${ok} | Error: ${error}`;
+        const resumenDiv = document.getElementById('resumenEstadisticas');
+        if (resumenDiv) resumenDiv.innerHTML = `📊 Total equipos: ${total} | OK: ${ok} | Error: ${error}`;
     }
 
     // ============= QR =============
     function generarQR(equipo, serie, posicion) {
         const qrDiv = document.createElement('div');
         qrDiv.className = 'qr-container';
-        const qrData = `Equipo: ${equipo}\nSerie: ${serie}\nPosición: ${posicion}\nProyecto: ${document.getElementById('nombreProyecto').value}\nFecha: ${new Date().toLocaleDateString()}`;
-        try {
-            new QRCode(qrDiv, { text: qrData, width: 50, height: 50 });
-        } catch(e) { qrDiv.innerText = 'QR'; }
+        const qrData = `Equipo: ${equipo}\nSerie: ${serie}\nPosición: ${posicion}\nProyecto: ${document.getElementById('nombreProyecto')?.value || ''}\nFecha: ${new Date().toLocaleDateString()}`;
+        try { new QRCode(qrDiv, { text: qrData, width: 50, height: 50 }); } catch(e) { qrDiv.innerText = 'QR'; }
         return qrDiv;
     }
 
     // ============= PDF PROFESIONAL =============
     async function generarPDFProfesional() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-        const data = captureFormData();
-        let y = 20;
-        
-        doc.setFontSize(20);
-        doc.setTextColor(10, 36, 114);
-        doc.text("INFORME INSTALACIÓN DE RACK", 20, y);
-        y += 10;
-        
-        doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0);
-        doc.text(`Proyecto: ${data.nombreProyecto}`, 20, y);
-        doc.text(`Empresa: ${data.empresa}`, 120, y);
-        y += 7;
-        doc.text(`Técnico: ${data.tecnico}`, 20, y);
-        doc.text(`Fecha: ${data.fechaInicio}`, 120, y);
-        y += 7;
-        doc.text(`Ubicación: ${data.ubicacion}`, 20, y);
-        doc.text(`Rack ID: ${data.rackId}`, 120, y);
-        y += 10;
-        
-        doc.setFontSize(12);
-        doc.setTextColor(10, 36, 114);
-        doc.text("EQUIPOS INSTALADOS", 20, y);
-        y += 5;
-        
-        let equiposBody = data.equipos.map(e => [e.equipo, e.modelo, e.serie, e.posicion, e.estado]);
-        doc.autoTable({
-            startY: y,
-            head: [['Equipo', 'Modelo', 'Nº Serie', 'Posición U', 'Estado']],
-            body: equiposBody,
-            theme: 'grid',
-            styles: { fontSize: 8 },
-            headStyles: { fillColor: [10, 36, 114], textColor: 255 }
-        });
-        
-        y = doc.lastAutoTable.finalY + 10;
-        doc.text(`Incidencias: ${data.incidencias.substring(0, 200)}`, 20, y);
-        
-        y += 10;
-        doc.line(20, y, 80, y);
-        doc.text(data.firmaTecnico || "Técnico", 20, y + 5);
-        doc.line(120, y, 180, y);
-        doc.text(data.firmaCliente || "Cliente", 120, y + 5);
-        
-        doc.save(`informe_${data.nombreProyecto || 'rack'}.pdf`);
-        mostrarNotificacion('PDF generado correctamente', 'success');
-        registrarCambio('PDF Generado', `Informe PDF creado para ${data.nombreProyecto}`);
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const data = captureFormData();
+            let y = 20;
+            doc.setFontSize(20);
+            doc.setTextColor(10, 36, 114);
+            doc.text("INFORME INSTALACIÓN DE RACK", 20, y);
+            y += 10;
+            doc.setFontSize(11);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Proyecto: ${data.nombreProyecto || '-'}`, 20, y);
+            doc.text(`Empresa: ${data.empresa || '-'}`, 120, y);
+            y += 7;
+            doc.text(`Técnico: ${data.tecnico || '-'}`, 20, y);
+            doc.text(`Fecha: ${data.fechaInicio || '-'}`, 120, y);
+            y += 10;
+            doc.setFontSize(12);
+            doc.setTextColor(10, 36, 114);
+            doc.text("EQUIPOS INSTALADOS", 20, y);
+            y += 5;
+            let equiposBody = (data.equipos || []).map(e => [e.equipo || '-', e.modelo || '-', e.serie || '-', e.posicion || '-', e.estado || '-']);
+            if (equiposBody.length === 0) equiposBody = [['No hay equipos', '', '', '', '']];
+            doc.autoTable({
+                startY: y,
+                head: [['Equipo', 'Modelo', 'Nº Serie', 'Posición U', 'Estado']],
+                body: equiposBody,
+                theme: 'grid',
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [10, 36, 114], textColor: 255 }
+            });
+            y = doc.lastAutoTable.finalY + 10;
+            doc.text(`Incidencias: ${(data.incidencias || '').substring(0, 200)}`, 20, y);
+            y += 10;
+            doc.line(20, y, 80, y);
+            doc.text(data.firmaTecnico || "Técnico", 20, y + 5);
+            doc.line(120, y, 180, y);
+            doc.text(data.firmaCliente || "Cliente", 120, y + 5);
+            doc.save(`informe_${data.nombreProyecto || 'rack'}.pdf`);
+            mostrarNotificacion('PDF generado correctamente', 'success');
+        } catch(e) { mostrarNotificacion('Error al generar PDF', 'error'); console.error(e); }
     }
-
-    // ============= IMÁGENES =============
-    document.getElementById('subirImagenes')?.addEventListener('change', function(e) {
-        const files = Array.from(e.target.files);
-        const galeria = document.getElementById('galeriaPreview');
-        files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-                const img = document.createElement('img');
-                img.src = ev.target.result;
-                img.className = 'galeria-img';
-                img.onclick = () => window.open(ev.target.result);
-                galeria.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
-        mostrarNotificacion(`${files.length} imagen(es) añadidas`, 'success');
-    });
 
     // ============= BACKUP AUTOMÁTICO =============
     function backupAutomatico() {
-        const data = captureFormData();
-        localStorage.setItem('rack_backup_diario', JSON.stringify(data));
-        localStorage.setItem('rack_backup_fecha', new Date().toISOString());
-        console.log('Backup automático realizado');
+        try {
+            const data = captureFormData();
+            localStorage.setItem('rack_backup_diario', JSON.stringify(data));
+            localStorage.setItem('rack_backup_fecha', new Date().toISOString());
+        } catch(e) { console.error('Backup error:', e); }
     }
     setInterval(backupAutomatico, 86400000);
     backupAutomatico();
 
-    // ============= FILTROS Y BÚSQUEDA =============
+    // ============= FILTROS =============
     function aplicarFiltros() {
         const searchText = document.getElementById('buscarEquipo')?.value.toLowerCase() || '';
         const estadoFiltro = document.getElementById('filtroEstado')?.value || '';
@@ -390,8 +373,8 @@
         });
     }
 
-    // ============= FUNCIONES EXISTENTES (tablas, rack, etc.) =============
-    function addEquipoRow(equipo='', modelo='', serie='', posicion='', estado='OK') {
+    // ============= FUNCIONES PRINCIPALES =============
+    function addEquipoRow(equipo = '', modelo = '', serie = '', posicion = '', estado = 'OK') {
         let row = equipoBody.insertRow();
         let num = equipoBody.rows.length;
         row.innerHTML = `
@@ -401,86 +384,89 @@
             <td><input value="${escapeHtml(serie)}"></td>
             <td><input value="${escapeHtml(posicion)}"></td>
             <td><select>${estado === 'OK' ? '<option selected>OK</option><option>Error</option>' : '<option>OK</option><option selected>Error</option>'}</select></td>
-            <td><div class="qr-placeholder" data-equipo="${escapeHtml(equipo)}" data-serie="${escapeHtml(serie)}" data-pos="${escapeHtml(posicion)}"></div></td>
+            <td class="qr-cell"></td>
             <td><button class="remove-row">🗑️</button></td>
         `;
-        const qrDiv = row.cells[6]?.querySelector('.qr-placeholder');
-        if (qrDiv) qrDiv.appendChild(generarQR(equipo, serie, posicion));
+        const qrCell = row.cells[6];
+        if (qrCell) qrCell.appendChild(generarQR(equipo, serie, posicion));
         bindRemoveButtons();
         renumEquipos();
         renderRackVisual();
         renderGraficos();
         registrarCambio('Equipo añadido', `${equipo} en U${posicion}`);
     }
-    
-    function addPatchRow(pp='', sw='', vlan='', color='', obs='') {
+
+    function addPatchRow(pp = '', sw = '', vlan = '', color = '', obs = '') {
         let row = patchBody.insertRow();
         row.innerHTML = `<td><input value="${escapeHtml(pp)}"></td><td><input value="${escapeHtml(sw)}"></td><td><input value="${escapeHtml(vlan)}"></td><td><input value="${escapeHtml(color)}"></td><td><input value="${escapeHtml(obs)}"></td><td><button class="remove-row-patch">🗑️</button></td>`;
         bindRemoveButtons();
     }
-    
-    function addAlimRow(equipo='', ups='No', fase='', obs='') {
+
+    function addAlimRow(equipo = '', ups = 'No', fase = '', obs = '') {
         let row = alimBody.insertRow();
         row.innerHTML = `<td><input value="${escapeHtml(equipo)}"></td><td><select>${ups === 'Sí' ? '<option selected>Sí</option><option>No</option>' : '<option>Sí</option><option selected>No</option>'}</select></td><td><input value="${escapeHtml(fase)}"></td><td><input value="${escapeHtml(obs)}"></td><td><button class="remove-row-alim">🗑️</button></td>`;
         bindRemoveButtons();
     }
-    
+
     function bindRemoveButtons() {
-        document.querySelectorAll('.remove-row').forEach(btn => btn.onclick = function() { 
-            let row = this.closest('tr');
-            let nombre = row.cells[1]?.querySelector('input')?.value || '';
-            this.closest('tr').remove(); 
-            renumEquipos(); 
-            saveLocal(); 
+        document.querySelectorAll('.remove-row').forEach(btn => btn.onclick = function() {
+            const nombre = this.closest('tr').cells[1]?.querySelector('input')?.value || '';
+            this.closest('tr').remove();
+            renumEquipos();
+            saveLocal();
             renderRackVisual();
             renderGraficos();
             registrarCambio('Equipo eliminado', nombre);
         });
         document.querySelectorAll('.remove-row-patch, .remove-row-alim').forEach(btn => btn.onclick = function() { this.closest('tr').remove(); saveLocal(); });
     }
-    
+
     function renumEquipos() { Array.from(equipoBody.rows).forEach((r, i) => r.cells[0].innerText = i + 1); }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
 
-    function getTotalU() { let unidadesU = document.getElementById('unidadesU').value; let match = unidadesU.match(/(\d+)/); return match ? parseInt(match[1]) : 42; }
-    
+    function getTotalU() {
+        const unidadesU = document.getElementById('unidadesU')?.value || '42U';
+        const match = unidadesU.match(/(\d+)/);
+        return match ? parseInt(match[1]) : 42;
+    }
+
     function renderRackVisual() {
         const totalU = getTotalU();
-        const equipos = Array.from(equipoBody.rows).map(r => ({ 
-            nombre: r.cells[1]?.querySelector('input')?.value || '', 
-            posicion: r.cells[4]?.querySelector('input')?.value || '', 
-            estado: r.cells[5]?.querySelector('select')?.value || 'OK' 
+        const equipos = Array.from(equipoBody.rows).map(r => ({
+            nombre: r.cells[1]?.querySelector('input')?.value || '',
+            posicion: r.cells[4]?.querySelector('input')?.value || '',
+            estado: r.cells[5]?.querySelector('select')?.value || 'OK'
         }));
         const rackContainer = document.getElementById('rackContainer');
         if (!rackContainer) return;
-        let occupied = new Array(totalU + 1).fill(null);
-        equipos.forEach(eq => { let u = parseInt(eq.posicion); if (u && u >= 1 && u <= totalU) occupied[u] = eq; });
+        const occupied = new Array(totalU + 1).fill(null);
+        equipos.forEach(eq => { const u = parseInt(eq.posicion); if (u && u >= 1 && u <= totalU) occupied[u] = eq; });
         let html = `<div class="rack-schema"><div class="rack-title">🗄️ RACK - ${totalU}U</div><div class="rack-grid">`;
         for (let u = totalU; u >= 1; u--) {
-            let eq = occupied[u];
-            let estadoClass = eq ? (eq.estado === 'Error' ? 'error' : '') : 'empty';
-            let displayText = eq ? `U${u}: ${eq.nombre}` : `U${u} - Vacío`;
-            html += `<div class="rack-unit"><div class="unit-number">U${u}</div><div class="unit-equipment ${estadoClass}" onclick="window.editarEquipoDesdeRack(${u})">${displayText}</div></div>`;
+            const eq = occupied[u];
+            const estadoClass = eq ? (eq.estado === 'Error' ? 'error' : '') : 'empty';
+            const displayText = eq ? `U${u}: ${eq.nombre.substring(0, 30)}` : `U${u} - Vacío`;
+            html += `<div class="rack-unit"><div class="unit-number">U${u}</div><div class="unit-equipment ${estadoClass}" onclick="editarEquipoDesdeRack(${u})">${displayText}</div></div>`;
         }
         html += `</div></div>`;
         rackContainer.innerHTML = html;
     }
-    
+
     window.editarEquipoDesdeRack = function(u) {
-        let equiposRows = Array.from(equipoBody.rows);
+        const equiposRows = Array.from(equipoBody.rows);
         let equipoEncontrado = null;
         for (let i = 0; i < equiposRows.length; i++) {
-            let posInput = equiposRows[i].cells[4]?.querySelector('input');
+            const posInput = equiposRows[i].cells[4]?.querySelector('input');
             if (posInput && parseInt(posInput.value) === u) { equipoEncontrado = equiposRows[i]; break; }
         }
         if (equipoEncontrado) {
-            let nombre = equipoEncontrado.cells[1]?.querySelector('input')?.value || '';
-            let nuevoNombre = prompt(`Editar equipo en U${u}`, nombre);
+            const nombre = equipoEncontrado.cells[1]?.querySelector('input')?.value || '';
+            const nuevoNombre = prompt(`Editar equipo en U${u}`, nombre);
             if (nuevoNombre && nuevoNombre.trim() !== '') {
                 equipoEncontrado.cells[1].querySelector('input').value = nuevoNombre;
-                let nuevoModelo = prompt("Modelo:", equipoEncontrado.cells[2]?.querySelector('input')?.value || '');
+                const nuevoModelo = prompt("Modelo:", equipoEncontrado.cells[2]?.querySelector('input')?.value || '');
                 if (nuevoModelo !== null) equipoEncontrado.cells[2].querySelector('input').value = nuevoModelo;
-                let nuevaSerie = prompt("Nº Serie:", equipoEncontrado.cells[3]?.querySelector('input')?.value || '');
+                const nuevaSerie = prompt("Nº Serie:", equipoEncontrado.cells[3]?.querySelector('input')?.value || '');
                 if (nuevaSerie !== null) equipoEncontrado.cells[3].querySelector('input').value = nuevaSerie;
                 saveLocal();
                 renderRackVisual();
@@ -488,116 +474,216 @@
                 registrarCambio('Equipo editado', `${nuevoNombre} en U${u}`);
             }
         } else {
-            let nombre = prompt(`Añadir equipo en U${u}`, "Nuevo equipo");
+            const nombre = prompt(`Añadir equipo en U${u}`, "Nuevo equipo");
             if (nombre && nombre.trim() !== '') { addEquipoRow(nombre, '', '', u.toString(), 'OK'); saveLocal(); }
         }
     };
-    
+
     function sincronizarEquiposConTabla() { renderRackVisual(); saveLocal(); mostrarNotificacion('Esquema sincronizado', 'success'); }
-    
+
     function captureFormData() {
-        let equipos = []; Array.from(equipoBody.rows).forEach(r => equipos.push({ equipo: r.cells[1]?.querySelector('input')?.value || '', modelo: r.cells[2]?.querySelector('input')?.value || '', serie: r.cells[3]?.querySelector('input')?.value || '', posicion: r.cells[4]?.querySelector('input')?.value || '', estado: r.cells[5]?.querySelector('select')?.value || 'OK' }));
-        let patching = []; Array.from(patchBody.rows).forEach(r => { let ins = r.querySelectorAll('input'); patching.push({ puertoPP: ins[0]?.value || '', puertoSwitch: ins[1]?.value || '', vlan: ins[2]?.value || '', color: ins[3]?.value || '', obs: ins[4]?.value || '' }); });
-        let alimentacion = []; Array.from(alimBody.rows).forEach(r => { let ins = r.querySelectorAll('input'); let sel = r.querySelector('select'); alimentacion.push({ equipo: ins[0]?.value || '', ups: sel?.value || 'No', fase: ins[1]?.value || '', obs: ins[2]?.value || '' }); });
-        let verificaciones = []; let vrows = document.querySelectorAll('#tablaVerif tbody tr'); vrows.forEach(r => { let sel = r.querySelector('select'); let ins = r.querySelectorAll('input'); verificaciones.push({ prueba: r.cells[0]?.innerText || '', resultado: sel ? sel.value : (ins[0]?.value || ''), notas: ins[ins.length-1]?.value || '' }); });
-        return { nombreProyecto: document.getElementById('nombreProyecto').value, empresa: document.getElementById('empresa').value, tecnico: document.getElementById('tecnico').value, fechaInicio: document.getElementById('fechaInicio').value, fechaFinPrev: document.getElementById('fechaFinPrev').value, estadoProyecto: document.getElementById('estadoProyecto').value, ubicacion: document.getElementById('ubicacion').value, rackId: document.getElementById('rackId').value, tipoRack: document.getElementById('tipoRack').value, medidas: document.getElementById('medidas').value, unidadesU: document.getElementById('unidadesU').value, refri: document.getElementById('refri').value, numPDU: document.getElementById('numPDU').value, redundante: document.getElementById('redundante').value, incidencias: document.getElementById('incidencias').value, firmaTecnico: document.getElementById('firmaTecnico').value, firmaCliente: document.getElementById('firmaCliente').value, equipos, patching, alimentacion, verificaciones, timestamp: Date.now() };
+        const equipos = [];
+        Array.from(equipoBody.rows).forEach(r => {
+            equipos.push({
+                equipo: r.cells[1]?.querySelector('input')?.value || '',
+                modelo: r.cells[2]?.querySelector('input')?.value || '',
+                serie: r.cells[3]?.querySelector('input')?.value || '',
+                posicion: r.cells[4]?.querySelector('input')?.value || '',
+                estado: r.cells[5]?.querySelector('select')?.value || 'OK'
+            });
+        });
+        const patching = [];
+        Array.from(patchBody.rows).forEach(r => {
+            const ins = r.querySelectorAll('input');
+            patching.push({ puertoPP: ins[0]?.value || '', puertoSwitch: ins[1]?.value || '', vlan: ins[2]?.value || '', color: ins[3]?.value || '', obs: ins[4]?.value || '' });
+        });
+        const alimentacion = [];
+        Array.from(alimBody.rows).forEach(r => {
+            const ins = r.querySelectorAll('input');
+            const sel = r.querySelector('select');
+            alimentacion.push({ equipo: ins[0]?.value || '', ups: sel?.value || 'No', fase: ins[1]?.value || '', obs: ins[2]?.value || '' });
+        });
+        const verificaciones = [];
+        const vrows = document.querySelectorAll('#tablaVerif tbody tr');
+        vrows.forEach(r => {
+            const sel = r.querySelector('select');
+            const ins = r.querySelectorAll('input');
+            verificaciones.push({ prueba: r.cells[0]?.innerText || '', resultado: sel ? sel.value : (ins[0]?.value || ''), notas: ins[ins.length - 1]?.value || '' });
+        });
+        return {
+            nombreProyecto: document.getElementById('nombreProyecto')?.value || '',
+            empresa: document.getElementById('empresa')?.value || '',
+            tecnico: document.getElementById('tecnico')?.value || '',
+            fechaInicio: document.getElementById('fechaInicio')?.value || '',
+            fechaFinPrev: document.getElementById('fechaFinPrev')?.value || '',
+            estadoProyecto: document.getElementById('estadoProyecto')?.value || 'En ejecución',
+            ubicacion: document.getElementById('ubicacion')?.value || '',
+            rackId: document.getElementById('rackId')?.value || '',
+            tipoRack: document.getElementById('tipoRack')?.value || 'Abierto',
+            medidas: document.getElementById('medidas')?.value || '',
+            unidadesU: document.getElementById('unidadesU')?.value || '',
+            refri: document.getElementById('refri')?.value || 'Sí',
+            numPDU: document.getElementById('numPDU')?.value || '',
+            redundante: document.getElementById('redundante')?.value || 'No',
+            incidencias: document.getElementById('incidencias')?.value || '',
+            firmaTecnico: document.getElementById('firmaTecnico')?.value || '',
+            firmaCliente: document.getElementById('firmaCliente')?.value || '',
+            equipos, patching, alimentacion, verificaciones, timestamp: Date.now()
+        };
     }
-    
+
     function loadFormData(data) {
         if (!data) return;
-        document.getElementById('nombreProyecto').value = data.nombreProyecto || ''; document.getElementById('empresa').value = data.empresa || ''; document.getElementById('tecnico').value = data.tecnico || ''; document.getElementById('fechaInicio').value = data.fechaInicio || ''; document.getElementById('fechaFinPrev').value = data.fechaFinPrev || ''; document.getElementById('estadoProyecto').value = data.estadoProyecto || 'En ejecución'; document.getElementById('ubicacion').value = data.ubicacion || ''; document.getElementById('rackId').value = data.rackId || ''; document.getElementById('tipoRack').value = data.tipoRack || 'Abierto'; document.getElementById('medidas').value = data.medidas || ''; document.getElementById('unidadesU').value = data.unidadesU || ''; document.getElementById('refri').value = data.refri || 'Sí'; document.getElementById('numPDU').value = data.numPDU || ''; document.getElementById('redundante').value = data.redundante || 'No'; document.getElementById('incidencias').value = data.incidencias || ''; document.getElementById('firmaTecnico').value = data.firmaTecnico || ''; document.getElementById('firmaCliente').value = data.firmaCliente || '';
-        equipoBody.innerHTML = ''; if (data.equipos?.length) data.equipos.forEach(e => addEquipoRow(e.equipo, e.modelo, e.serie, e.posicion, e.estado)); else addEquipoRow('Switch principal', '', '', '', 'OK');
-        patchBody.innerHTML = ''; if (data.patching?.length) data.patching.forEach(p => addPatchRow(p.puertoPP, p.puertoSwitch, p.vlan, p.color, p.obs)); else addPatchRow('', '', '', '', '');
-        alimBody.innerHTML = ''; if (data.alimentacion?.length) data.alimentacion.forEach(a => addAlimRow(a.equipo, a.ups, a.fase, a.obs)); else addAlimRow('Switch 1', 'Sí', 'F1', '');
-        if (data.verificaciones) { let vrows = document.querySelectorAll('#tablaVerif tbody tr'); vrows.forEach((r, i) => { if (data.verificaciones[i]) { let sel = r.querySelector('select'); let ins = r.querySelectorAll('input'); if (sel) sel.value = data.verificaciones[i].resultado || 'OK'; if (ins[0]) ins[0].value = data.verificaciones[i].notas || ''; } }); }
-        bindRemoveButtons(); saveLocal(); renderRackVisual(); renderGraficos();
+        if (document.getElementById('nombreProyecto')) document.getElementById('nombreProyecto').value = data.nombreProyecto || '';
+        if (document.getElementById('empresa')) document.getElementById('empresa').value = data.empresa || '';
+        if (document.getElementById('tecnico')) document.getElementById('tecnico').value = data.tecnico || '';
+        if (document.getElementById('fechaInicio')) document.getElementById('fechaInicio').value = data.fechaInicio || '';
+        if (document.getElementById('fechaFinPrev')) document.getElementById('fechaFinPrev').value = data.fechaFinPrev || '';
+        if (document.getElementById('estadoProyecto')) document.getElementById('estadoProyecto').value = data.estadoProyecto || 'En ejecución';
+        if (document.getElementById('ubicacion')) document.getElementById('ubicacion').value = data.ubicacion || '';
+        if (document.getElementById('rackId')) document.getElementById('rackId').value = data.rackId || '';
+        if (document.getElementById('tipoRack')) document.getElementById('tipoRack').value = data.tipoRack || 'Abierto';
+        if (document.getElementById('medidas')) document.getElementById('medidas').value = data.medidas || '';
+        if (document.getElementById('unidadesU')) document.getElementById('unidadesU').value = data.unidadesU || '';
+        if (document.getElementById('refri')) document.getElementById('refri').value = data.refri || 'Sí';
+        if (document.getElementById('numPDU')) document.getElementById('numPDU').value = data.numPDU || '';
+        if (document.getElementById('redundante')) document.getElementById('redundante').value = data.redundante || 'No';
+        if (document.getElementById('incidencias')) document.getElementById('incidencias').value = data.incidencias || '';
+        if (document.getElementById('firmaTecnico')) document.getElementById('firmaTecnico').value = data.firmaTecnico || '';
+        if (document.getElementById('firmaCliente')) document.getElementById('firmaCliente').value = data.firmaCliente || '';
+        equipoBody.innerHTML = '';
+        if (data.equipos?.length) data.equipos.forEach(e => addEquipoRow(e.equipo, e.modelo, e.serie, e.posicion, e.estado));
+        else addEquipoRow('Switch principal', '', '', '', 'OK');
+        patchBody.innerHTML = '';
+        if (data.patching?.length) data.patching.forEach(p => addPatchRow(p.puertoPP, p.puertoSwitch, p.vlan, p.color, p.obs));
+        alimBody.innerHTML = '';
+        if (data.alimentacion?.length) data.alimentacion.forEach(a => addAlimRow(a.equipo, a.ups, a.fase, a.obs));
+        if (data.verificaciones) {
+            const vrows = document.querySelectorAll('#tablaVerif tbody tr');
+            vrows.forEach((r, i) => {
+                if (data.verificaciones[i]) {
+                    const sel = r.querySelector('select');
+                    const ins = r.querySelectorAll('input');
+                    if (sel) sel.value = data.verificaciones[i].resultado || 'OK';
+                    if (ins[0]) ins[0].value = data.verificaciones[i].notas || '';
+                }
+            });
+        }
+        bindRemoveButtons();
+        saveLocal();
+        renderRackVisual();
+        renderGraficos();
     }
-    
-    function saveLocal() { let data = captureFormData(); localStorage.setItem('rackProject_last', JSON.stringify(data)); document.getElementById('statusMsg').innerHTML = '✅ Guardado local: ' + new Date().toLocaleTimeString(); mostrarNotificacion('Datos guardados localmente', 'success'); return data; }
-    function loadLocal() { let last = localStorage.getItem('rackProject_last'); if (last) loadFormData(JSON.parse(last)); else { addEquipoRow('Switch principal', '', '', '', 'OK'); addPatchRow(); addAlimRow('Switch 1', 'Sí', 'F1', ''); } }
 
-    // ============= GOOGLE SHEETS =============
+    function saveLocal() {
+        try {
+            const data = captureFormData();
+            localStorage.setItem('rackProject_last', JSON.stringify(data));
+            const statusDiv = document.getElementById('statusMsg');
+            if (statusDiv) statusDiv.innerHTML = '✅ Guardado local: ' + new Date().toLocaleTimeString();
+            mostrarNotificacion('Datos guardados localmente', 'success');
+            return data;
+        } catch(e) { console.error(e); return null; }
+    }
+
+    function loadLocal() {
+        const last = localStorage.getItem('rackProject_last');
+        if (last) { try { loadFormData(JSON.parse(last)); } catch(e) { console.error(e); } }
+        else { addEquipoRow('Switch principal', '', '', '', 'OK'); addPatchRow(); addAlimRow('Switch 1', 'Sí', 'F1', ''); }
+    }
+
+    // ============= GOOGLE SHEETS BÁSICO =============
     function gapiLoaded() { gapi.load('client', initializeGapiClient); }
     async function initializeGapiClient() { await gapi.client.init({ apiKey: API_KEY, discoveryDocs: DISCOVERY_DOCS }); gapiInited = true; maybeEnableButtons(); }
     function gisLoaded() { tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: '' }); gisInited = true; maybeEnableButtons(); }
-    function maybeEnableButtons() { if(gapiInited && gisInited) { document.getElementById('guardarSheets').disabled = false; document.getElementById('cargarSheets').disabled = false; } }
-    
+    function maybeEnableButtons() { if (gapiInited && gisInited) { if (document.getElementById('guardarSheets')) document.getElementById('guardarSheets').disabled = false; if (document.getElementById('cargarSheets')) document.getElementById('cargarSheets').disabled = false; } }
     function loginGoogle() {
-        tokenClient.callback = async (resp) => { if (resp.error) throw resp; currentUser = resp; document.getElementById('userInfo').innerHTML = `✅ Conectado: ${resp.email || 'usuario'}`; document.getElementById('statusMsg').innerHTML = '✅ Conectado a Google.'; mostrarNotificacion('Conectado a Google', 'success'); await listOrCreateSheet(); };
-        if (gapi.client.getToken() === null) tokenClient.requestAccessToken({ prompt: 'consent' }); else tokenClient.requestAccessToken({ prompt: '' });
+        tokenClient.callback = async (resp) => {
+            if (resp.error) throw resp;
+            currentUser = resp;
+            if (document.getElementById('userInfo')) document.getElementById('userInfo').innerHTML = `✅ Conectado: ${resp.email || 'usuario'}`;
+            mostrarNotificacion('Conectado a Google', 'success');
+            await listOrCreateSheet();
+        };
+        if (gapi.client.getToken() === null) tokenClient.requestAccessToken({ prompt: 'consent' });
+        else tokenClient.requestAccessToken({ prompt: '' });
     }
-    
     async function listOrCreateSheet() {
         try {
-            let searchResp = await gapi.client.drive.files.list({ q: "name='Rack_Instalaciones' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false", fields: "files(id,name)" });
-            let files = searchResp.result.files;
-            if (files && files.length > 0) { currentSpreadsheetId = files[0].id; document.getElementById('statusMsg').innerHTML = `📗 Hoja encontrada: ${files[0].name}`; }
-            else { 
-                let fileMetadata = { name: 'Rack_Instalaciones', mimeType: 'application/vnd.google-apps.spreadsheet' }; 
-                let file = await gapi.client.drive.files.create({ resource: fileMetadata }); 
-                currentSpreadsheetId = file.result.id; 
-                await gapi.client.sheets.spreadsheets.batchUpdate({
-                    spreadsheetId: currentSpreadsheetId,
-                    resource: { requests: [{ addSheet: { properties: { title: 'Resumen' } } }, { addSheet: { properties: { title: 'Equipos' } } }, { addSheet: { properties: { title: 'Patching' } } }, { addSheet: { properties: { title: 'Alimentacion' } } }, { addSheet: { properties: { title: 'Verificaciones' } } }] }
-                });
+            const searchResp = await gapi.client.drive.files.list({ q: "name='Rack_Instalaciones' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false", fields: "files(id,name)" });
+            const files = searchResp.result.files;
+            if (files && files.length > 0) { currentSpreadsheetId = files[0].id; }
+            else {
+                const fileMetadata = { name: 'Rack_Instalaciones', mimeType: 'application/vnd.google-apps.spreadsheet' };
+                const file = await gapi.client.drive.files.create({ resource: fileMetadata });
+                currentSpreadsheetId = file.result.id;
             }
-        } catch(error) { console.error(error); }
+        } catch (error) { console.error(error); }
     }
-    
     async function guardarEnSheets() {
         if (!currentSpreadsheetId) await listOrCreateSheet();
         try {
-            let data = captureFormData();
-            let resumenValues = [[data.nombreProyecto, data.empresa, data.tecnico, data.fechaInicio, data.fechaFinPrev, data.estadoProyecto, data.ubicacion, data.rackId, data.tipoRack, data.medidas, data.unidadesU, data.refri, data.numPDU, data.redundante, data.incidencias, new Date().toLocaleString()]];
+            const data = captureFormData();
+            const resumenValues = [[data.nombreProyecto, data.empresa, data.tecnico, data.fechaInicio, data.fechaFinPrev, data.estadoProyecto, data.ubicacion, data.rackId, data.tipoRack, data.medidas, data.unidadesU, data.refri, data.numPDU, data.redundante, data.incidencias, new Date().toLocaleString()]];
             await gapi.client.sheets.spreadsheets.values.update({ spreadsheetId: currentSpreadsheetId, range: 'Resumen!A1:P1', valueInputOption: 'USER_ENTERED', resource: { values: resumenValues } });
-            let equiposRows = [["Equipo","Modelo","Serie","Posición U","Estado"]]; data.equipos.forEach(e => equiposRows.push([e.equipo, e.modelo, e.serie, e.posicion, e.estado]));
-            await gapi.client.sheets.spreadsheets.values.update({ spreadsheetId: currentSpreadsheetId, range: 'Equipos!A1:E100', valueInputOption: 'USER_ENTERED', resource: { values: equiposRows } });
-            let patchRows = [["Puerto PP","Puerto Switch","VLAN","Color","Observaciones"]]; data.patching.forEach(p => patchRows.push([p.puertoPP, p.puertoSwitch, p.vlan, p.color, p.obs]));
-            await gapi.client.sheets.spreadsheets.values.update({ spreadsheetId: currentSpreadsheetId, range: 'Patching!A1:E100', valueInputOption: 'USER_ENTERED', resource: { values: patchRows } });
             mostrarNotificacion('Guardado en Google Sheets', 'success');
-            registrarCambio('Guardado en Sheets', `Proyecto ${data.nombreProyecto} sincronizado`);
-        } catch(error) { mostrarNotificacion('Error al guardar', 'error'); }
+        } catch (error) { mostrarNotificacion('Error al guardar', 'error'); console.error(error); }
     }
-    
     async function cargarDeSheets() {
         if (!currentSpreadsheetId) await listOrCreateSheet();
         try {
-            let resumen = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: currentSpreadsheetId, range: 'Resumen!A1:P1' });
-            let equiposRows = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: currentSpreadsheetId, range: 'Equipos!A2:E100' });
+            const resumen = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: currentSpreadsheetId, range: 'Resumen!A1:P1' });
             if (resumen.result.values && resumen.result.values[0]) {
-                let vals = resumen.result.values[0];
-                let data = { nombreProyecto: vals[0] || '', empresa: vals[1] || '', tecnico: vals[2] || '', fechaInicio: vals[3] || '', fechaFinPrev: vals[4] || '', estadoProyecto: vals[5] || 'En ejecución', ubicacion: vals[6] || '', rackId: vals[7] || '', tipoRack: vals[8] || 'Abierto', medidas: vals[9] || '', unidadesU: vals[10] || '', refri: vals[11] || 'Sí', numPDU: vals[12] || '', redundante: vals[13] || 'No', incidencias: vals[14] || '', equipos: [] };
-                if (equiposRows.result.values) data.equipos = equiposRows.result.values.map(r => ({ equipo: r[0], modelo: r[1], serie: r[2], posicion: r[3], estado: r[4] }));
+                const vals = resumen.result.values[0];
+                const data = { nombreProyecto: vals[0] || '', empresa: vals[1] || '', tecnico: vals[2] || '', fechaInicio: vals[3] || '', fechaFinPrev: vals[4] || '', estadoProyecto: vals[5] || 'En ejecución', ubicacion: vals[6] || '', rackId: vals[7] || '', tipoRack: vals[8] || 'Abierto', medidas: vals[9] || '', unidadesU: vals[10] || '', refri: vals[11] || 'Sí', numPDU: vals[12] || '', redundante: vals[13] || 'No', incidencias: vals[14] || '', equipos: [] };
                 loadFormData(data);
                 mostrarNotificacion('Cargado desde Google Sheets', 'success');
-            } else alert('No hay datos');
-        } catch(error) { mostrarNotificacion('Error al cargar', 'error'); }
+            }
+        } catch (error) { mostrarNotificacion('Error al cargar', 'error'); console.error(error); }
     }
 
-    // ============= INICIALIZACIÓN =============
+    // ============= EVENTOS E INICIALIZACIÓN =============
     window.addEventListener('load', () => { loadLocal(); setInterval(saveLocal, 30000); renderHistorial(); });
-    window.toggleCollapse = function(el) { let parent = el.parentElement; parent.classList.toggle('collapsed'); let arrow = el.innerHTML.includes('▼') ? '▶' : '▼'; el.innerHTML = el.innerHTML.replace(/[▼▶]/, arrow); };
-    
-    document.getElementById('guardarLocal').onclick = () => saveLocal();
-    document.getElementById('exportarJSON').onclick = () => { let d = captureFormData(); saveAs(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}), `proyecto_${d.nombreProyecto||'rack'}.json`); };
-    document.getElementById('importarJSON').onclick = () => { let inp = document.createElement('input'); inp.type='file'; inp.accept='application/json'; inp.onchange=e=>{ let f=e.target.files[0]; let r=new FileReader(); r.onload=ev=>loadFormData(JSON.parse(ev.target.result)); r.readAsText(f); }; inp.click(); };
-    document.getElementById('nuevoProyecto').onclick = () => { if(confirm('¿Borrar todo?')) location.reload(); };
-    document.getElementById('addEquipo').onclick = () => addEquipoRow('Nuevo equipo', '', '', '', 'OK');
-    document.getElementById('addPatch').onclick = () => addPatchRow();
-    document.getElementById('addAlim').onclick = () => addAlimRow('Nuevo equipo', 'No', '', '');
-    document.getElementById('loginGoogle').onclick = loginGoogle;
-    document.getElementById('guardarSheets').onclick = guardarEnSheets;
-    document.getElementById('cargarSheets').onclick = cargarDeSheets;
-    document.getElementById('generarExcel').onclick = () => { let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([captureFormData()]), "Proyecto"); XLSX.writeFile(wb, `rack_${captureFormData().nombreProyecto || 'proyecto'}.xlsx`); mostrarNotificacion('Excel exportado', 'success'); };
-    document.getElementById('generarWord').onclick = () => { let content = document.getElementById('app').cloneNode(true); content.querySelectorAll('.toolbar, .btn-group, .add-row-btn, .remove-row, .remove-row-patch, .remove-row-alim, #loginGoogle, #guardarSheets, #cargarSheets').forEach(el => el.remove()); let blob = new Blob([`<html><body>${content.innerHTML}</body></html>`], {type:'application/msword'}); saveAs(blob, `proyecto_${captureFormData().nombreProyecto || 'rack'}.doc`); mostrarNotificacion('Word exportado', 'success'); };
-    document.getElementById('generarPDFProfesional').onclick = generarPDFProfesional;
-    document.getElementById('crearEquipoDesdeRack').onclick = () => { let u = prompt(`Unidad U (1-${getTotalU()})`, "1"); if(u) window.editarEquipoDesdeRack(parseInt(u)); };
-    document.getElementById('sincronizarEquipos').onclick = sincronizarEquiposConTabla;
-    document.getElementById('aplicarFiltro').onclick = aplicarFiltros;
-    document.getElementById('buscarEquipo').oninput = aplicarFiltros;
-    document.getElementById('filtroEstado').onchange = aplicarFiltros;
-    document.getElementById('limpiarHistorial').onclick = () => { if(confirm('¿Limpiar historial?')) { localStorage.removeItem('rack_historial'); renderHistorial(); mostrarNotificacion('Historial limpiado', 'info'); } };
-    
+    window.toggleCollapse = function(el) { const parent = el.parentElement; parent.classList.toggle('collapsed'); const arrow = el.innerHTML.includes('▼') ? '▶' : '▼'; el.innerHTML = el.innerHTML.replace(/[▼▶]/, arrow); };
+
+    if (document.getElementById('guardarLocal')) document.getElementById('guardarLocal').onclick = () => saveLocal();
+    if (document.getElementById('exportarJSON')) document.getElementById('exportarJSON').onclick = () => { const d = captureFormData(); saveAs(new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' }), `proyecto_${d.nombreProyecto || 'rack'}.json`); };
+    if (document.getElementById('importarJSON')) document.getElementById('importarJSON').onclick = () => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json'; inp.onchange = e => { const f = e.target.files[0]; const r = new FileReader(); r.onload = ev => loadFormData(JSON.parse(ev.target.result)); r.readAsText(f); }; inp.click(); };
+    if (document.getElementById('nuevoProyecto')) document.getElementById('nuevoProyecto').onclick = () => { if (confirm('¿Borrar todo?')) location.reload(); };
+    if (document.getElementById('addEquipo')) document.getElementById('addEquipo').onclick = () => addEquipoRow('Nuevo equipo', '', '', '', 'OK');
+    if (document.getElementById('addPatch')) document.getElementById('addPatch').onclick = () => addPatchRow();
+    if (document.getElementById('addAlim')) document.getElementById('addAlim').onclick = () => addAlimRow('Nuevo equipo', 'No', '', '');
+    if (document.getElementById('loginGoogle')) document.getElementById('loginGoogle').onclick = loginGoogle;
+    if (document.getElementById('guardarSheets')) document.getElementById('guardarSheets').onclick = guardarEnSheets;
+    if (document.getElementById('cargarSheets')) document.getElementById('cargarSheets').onclick = cargarDeSheets;
+    if (document.getElementById('generarExcel')) document.getElementById('generarExcel').onclick = () => { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([captureFormData()]), "Proyecto"); XLSX.writeFile(wb, `rack_${captureFormData().nombreProyecto || 'proyecto'}.xlsx`); };
+    if (document.getElementById('generarWord')) document.getElementById('generarWord').onclick = () => { const content = document.getElementById('app').cloneNode(true); const blob = new Blob([`<html><body>${content.innerHTML}</body></html>`], { type: 'application/msword' }); saveAs(blob, `proyecto_${captureFormData().nombreProyecto || 'rack'}.doc`); };
+    if (document.getElementById('generarPDFProfesional')) document.getElementById('generarPDFProfesional').onclick = generarPDFProfesional;
+    if (document.getElementById('crearEquipoDesdeRack')) document.getElementById('crearEquipoDesdeRack').onclick = () => { const u = prompt(`Unidad U (1-${getTotalU()})`, "1"); if (u) editarEquipoDesdeRack(parseInt(u)); };
+    if (document.getElementById('sincronizarEquipos')) document.getElementById('sincronizarEquipos').onclick = sincronizarEquiposConTabla;
+    if (document.getElementById('aplicarFiltro')) document.getElementById('aplicarFiltro').onclick = aplicarFiltros;
+    if (document.getElementById('buscarEquipo')) document.getElementById('buscarEquipo').oninput = aplicarFiltros;
+    if (document.getElementById('filtroEstado')) document.getElementById('filtroEstado').onchange = aplicarFiltros;
+    if (document.getElementById('limpiarHistorial')) document.getElementById('limpiarHistorial').onclick = () => { if (confirm('¿Limpiar historial?')) { localStorage.removeItem('rack_historial'); renderHistorial(); mostrarNotificacion('Historial limpiado', 'info'); } };
+    if (document.getElementById('subirImagenes')) document.getElementById('subirImagenes').onchange = function(e) {
+        const files = Array.from(e.target.files);
+        const galeria = document.getElementById('galeriaPreview');
+        if (galeria) {
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    img.className = 'galeria-img';
+                    img.onclick = () => window.open(ev.target.result);
+                    galeria.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+            mostrarNotificacion(`${files.length} imagen(es) añadidas`, 'success');
+        }
+    };
+
     bindRemoveButtons();
     const scriptGAPI = document.createElement('script'); scriptGAPI.src = 'https://apis.google.com/js/api.js'; scriptGAPI.onload = gapiLoaded; document.head.appendChild(scriptGAPI);
     const scriptGIS = document.createElement('script'); scriptGIS.src = 'https://accounts.google.com/gsi/client'; scriptGIS.onload = gisLoaded; document.head.appendChild(scriptGIS);
