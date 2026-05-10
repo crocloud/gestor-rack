@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rack Installer - Con Google Sheets</title>
+    <!-- Google API Client Library -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+    <!-- Librerías auxiliares -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; margin: 0; padding: 20px; }
+        .container { max-width: 1400px; margin: auto; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        h1 { color: #0a2472; border-bottom: 3px solid #0a2472; margin-top: 0; }
+        h2 { background: #e9ecef; padding: 8px 15px; border-radius: 8px; margin-top: 25px; font-size: 1.3rem; }
+        .toolbar { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
+        .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
+        button { background: #0a2472; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { opacity: 0.9; transform: scale(1.02); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-success { background: #28a745; }
+        .btn-google { background: #0f9d58; }
+        .btn-danger { background: #dc3545; }
+        .status-bar { background: #d4edda; padding: 8px 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; }
+        .status-bar.error { background: #f8d7da; color: #721c24; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.85rem; }
+        th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; }
+        th { background: #e2e8f0; font-weight: 600; }
+        input, select, textarea { width: 100%; padding: 6px; border: 1px solid #bdc3c7; border-radius: 5px; font-size: 0.85rem; }
+        .flex-row { display: flex; gap: 15px; flex-wrap: wrap; margin: 10px 0; }
+        .flex-item { flex: 1; min-width: 180px; }
+        .sign-line { display: flex; gap: 20px; margin-top: 20px; }
+        .sign-item { flex: 1; border-top: 1px solid #000; padding-top: 5px; text-align: center; }
+        .add-row-btn { background: #28a745; font-size: 0.75rem; padding: 5px 12px; margin: 5px 0; }
+        .remove-row, .remove-row-patch, .remove-row-alim { background: #dc3545; font-size: 0.7rem; padding: 2px 8px; }
+        #userInfo { font-size: 0.8rem; font-weight: bold; }
+        hr { margin: 20px 0; }
+        footer { text-align: center; margin-top: 30px; font-size: 0.75rem; color: #6c757d; }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <h1>📡 GESTOR DE RACK - SINCRONIZADO CON GOOGLE SHEETS</h1>
+    
+    <div class="toolbar">
+        <div class="btn-group">
+            <button id="guardarLocal" class="btn-success">💾 Guardar local</button>
+            <button id="exportarJSON">📁 Exportar JSON</button>
+            <button id="importarJSON">📤 Importar JSON</button>
+            <button id="nuevoProyecto" class="btn-danger">🆕 Nuevo proyecto</button>
+        </div>
+        <div id="googleSection">
+            <button id="loginGoogle" class="btn-google">🔐 Conectar con Google</button>
+            <button id="guardarSheets" style="background:#0f9d58;" disabled>📤 Guardar en Google Sheets</button>
+            <button id="cargarSheets" style="background:#0f9d58;" disabled>📥 Cargar de Google Sheets</button>
+            <span id="userInfo">⚪ No conectado</span>
+        </div>
+    </div>
+    <div class="status-bar" id="statusMsg">✅ Estado: Listo. Los datos se guardan localmente cada 30s.</div>
+
+    <!-- Campos del proyecto -->
+    <div class="flex-row">
+        <div class="flex-item"><label>📌 Nombre proyecto:</label> <input type="text" id="nombreProyecto" placeholder="Ej: Instalación Oficinas Centro"></div>
+        <div class="flex-item"><label>🏢 Empresa/Cliente:</label> <input type="text" id="empresa"></div>
+        <div class="flex-item"><label>👤 Técnico:</label> <input type="text" id="tecnico"></div>
+    </div>
+    <div class="flex-row">
+        <div class="flex-item"><label>📅 Fecha inicio:</label> <input type="date" id="fechaInicio"></div>
+        <div class="flex-item"><label>📅 Fecha fin prevista:</label> <input type="date" id="fechaFinPrev"></div>
+        <div class="flex-item"><label>🟢 Estado:</label> <select id="estadoProyecto"><option>En planificación</option><option>En ejecución</option><option>Completado</option></select></div>
+    </div>
+
+    <h2>📍 DATOS DEL RACK</h2>
+    <div class="flex-row">
+        <div class="flex-item"><label>Ubicación:</label> <input type="text" id="ubicacion" placeholder="Ej: Planta 2, Sala servidores"></div>
+        <div class="flex-item"><label>Rack ID:</label> <input type="text" id="rackId" placeholder="Ej: R01/P01/S01"></div>
+        <div class="flex-item"><label>Tipo:</label> <select id="tipoRack"><option>Abierto</option><option>Cerrado</option><option>Gabinete</option></select></div>
+    </div>
+    <div class="flex-row">
+        <div class="flex-item"><label>Medidas (AnxAlxFo):</label> <input type="text" id="medidas" placeholder="Ej: 600x2000x1000 mm"></div>
+        <div class="flex-item"><label>Unidades U:</label> <input type="text" id="unidadesU" placeholder="Ej: 42U"></div>
+        <div class="flex-item"><label>Refrigeración:</label> <select id="refri"><option>Sí</option><option>No</option></select></div>
+    </div>
+
+    <h2>🖥️ EQUIPOS</h2>
+    <table id="tablaEquipos"><thead><tr><th>Nº</th><th>Equipo</th><th>Modelo</th><th>Nº Serie</th><th>Posición U</th><th>Estado</th><th></th></tr></thead><tbody></tbody></table>
+    <button id="addEquipo" class="add-row-btn">➕ Añadir equipo</button>
+
+    <h2>🔌 PATCHING</h2>
+    <table id="tablaPatching"><thead><tr><th>Puerto Patch Panel</th><th>Puerto Switch</th><th>VLAN</th><th>Color cable</th><th>Observaciones</th><th></th></tr></thead><tbody></tbody></table>
+    <button id="addPatch" class="add-row-btn">➕ Añadir conexión</button>
+
+    <h2>⚡ ALIMENTACIÓN</h2>
+    <div class="flex-row">
+        <div class="flex-item"><label>Nº PDUs:</label> <input type="text" id="numPDU" placeholder="Ej: 2"></div>
+        <div class="flex-item"><label>Alimentación redundante:</label> <select id="redundante"><option>No</option><option>Sí</option></select></div>
+    </div>
+    <table id="tablaAlimentacion"><thead><tr><th>Equipo/PDU</th><th>Alimentado por UPS</th><th>Fase</th><th>Observaciones</th><th></th></tr></thead><tbody></tbody></table>
+    <button id="addAlim" class="add-row-btn">➕ Añadir equipo alimentación</button>
+
+    <h2>✅ VERIFICACIONES</h2>
+    <table id="tablaVerif">
+        <thead><tr><th>Prueba</th><th>Resultado</th><th>Notas</th></tr></thead>
+        <tbody>
+            <tr><td>Conectividad mismo rack</td><td><select><option>OK</option><option>NOK</option></select></td><td><input placeholder="Notas"></td></tr>
+            <tr><td>Conectividad otros racks</td><td><select><option>OK</option><option>NOK</option></select></td><td><input placeholder="Notas"></td></tr>
+            <tr><td>LEDs enlaces switches</td><td><select><option>OK</option><option>NOK</option></select></td><td><input placeholder="Notas"></td></tr>
+            <tr><td>Temperatura interior</td><td><input placeholder="Ej: 24°C"></td><td><input placeholder="Notas"></td></tr>
+        </tbody>
+    </table>
+
+    <h2>📝 INCIDENCIAS / NOTAS</h2>
+    <textarea rows="3" id="incidencias" style="width:100%" placeholder="Registro de cambios, pendientes, observaciones..."></textarea>
+
+    <h2>✍️ FIRMAS</h2>
+    <div class="sign-line">
+        <div class="sign-item"><strong>Técnico instalador:</strong><br><input id="firmaTecnico" placeholder="Nombre"><br>Firma: _________________</div>
+        <div class="sign-item"><strong>Cliente/Responsable:</strong><br><input id="firmaCliente" placeholder="Nombre"><br>Firma: _________________</div>
+    </div>
+
+    <div class="btn-group" style="justify-content: center; margin: 25px 0;">
+        <button id="generarPDF">📄 Generar PDF</button>
+        <button id="generarExcel">📊 Exportar a Excel</button>
+        <button id="generarWord">📝 Exportar a Word</button>
+    </div>
+    <footer>🔐 Con Google Sheets: guarda y carga proyectos desde tu Drive personal.</footer>
+</div>
+
+<script>
+    // ============= CONFIGURACIÓN =============
+    // ⚠️ TUS CREDENCIALES REALES (YA INCLUIDAS) ⚠️
+    const API_KEY = 'AIzaSyB9kHrNJXmQvCF7PMifJiInA2NB5Q1Jnno';
+    const CLIENT_ID = '705581030720-42ofnt76tittia0cp6h1786mjgujtnb9.apps.googleusercontent.com';
+    const DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4", "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+    const SCOPES = "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file";
+    
+    let tokenClient;
+    let gapiInited = false;
+    let gisInited = false;
+    let currentUser = null;
+    let currentSpreadsheetId = null;
+
+    // Elementos dinámicos
+    const equipoBody = document.querySelector('#tablaEquipos tbody');
+    const patchBody = document.querySelector('#tablaPatching tbody');
+    const alimBody = document.querySelector('#tablaAlimentacion tbody');
+
+    // ============= FUNCIONES DE TABLAS =============
+    function addEquipoRow(equipo='', modelo='', serie='', posicion='', estado='OK') {
+        let row = equipoBody.insertRow();
+        let num = equipoBody.rows.length;
+        row.innerHTML = `
+            <td>${num}</td>
+            <td><input value="${escapeHtml(equipo)}"></td>
+            <td><input value="${escapeHtml(modelo)}"></td>
+            <td><input value="${escapeHtml(serie)}"></td>
+            <td><input value="${escapeHtml(posicion)}"></td>
+            <td><select>${estado === 'OK' ? '<option selected>OK</option><option>Error</option>' : '<option>OK</option><option selected>Error</option>'}</select></td>
+            <td><button class="remove-row">🗑️</button></td>
+        `;
+        bindRemoveButtons();
+        renumEquipos();
+    }
+    
+    function addPatchRow(pp='', sw='', vlan='', color='', obs='') {
+        let row = patchBody.insertRow();
+        row.innerHTML = `
+            <td><input value="${escapeHtml(pp)}"></td>
+            <td><input value="${escapeHtml(sw)}"></td>
+            <td><input value="${escapeHtml(vlan)}"></td>
+            <td><input value="${escapeHtml(color)}"></td>
+            <td><input value="${escapeHtml(obs)}"></td>
+            <td><button class="remove-row-patch">🗑️</button></td>
+        `;
+        bindRemoveButtons();
+    }
+    
+    function addAlimRow(equipo='', ups='No', fase='', obs='') {
+        let row = alimBody.insertRow();
+        row.innerHTML = `
+            <td><input value="${escapeHtml(equipo)}"></td>
+            <td><select>${ups === 'Sí' ? '<option selected>Sí</option><option>No</option>' : '<option>Sí</option><option selected>No</option>'}</select></td>
+            <td><input value="${escapeHtml(fase)}"></td>
+            <td><input value="${escapeHtml(obs)}"></td>
+            <td><button class="remove-row-alim">🗑️</button></td>
+        `;
+        bindRemoveButtons();
+    }
+    
+    function bindRemoveButtons() {
+        document.querySelectorAll('.remove-row').forEach(btn => btn.onclick = function() { this.closest('tr').remove(); renumEquipos(); saveLocal(); });
+        document.querySelectorAll('.remove-row-patch, .remove-row-alim').forEach(btn => btn.onclick = function() { this.closest('tr').remove(); saveLocal(); });
+    }
+    
+    function renumEquipos() { 
+        Array.from(equipoBody.rows).forEach((r, i) => r.cells[0].innerText = i + 1); 
+    }
+    
+    function escapeHtml(str) { 
+        if (!str) return ''; 
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }); 
+    }
+
+    // ============= CAPTURAR / CARGAR DATOS =============
+    function captureFormData() {
+        let equipos = [];
+        Array.from(equipoBody.rows).forEach(r => {
+            equipos.push({
+                equipo: r.cells[1]?.querySelector('input')?.value || '',
+                modelo: r.cells[2]?.querySelector('input')?.value || '',
+                serie: r.cells[3]?.querySelector('input')?.value || '',
+                posicion: r.cells[4]?.querySelector('input')?.value || '',
+                estado: r.cells[5]?.querySelector('select')?.value || 'OK'
+            });
+        });
+        
+        let patching = [];
+        Array.from(patchBody.rows).forEach(r => {
+            let ins = r.querySelectorAll('input');
+            patching.push({
+                puertoPP: ins[0]?.value || '',
+                puertoSwitch: ins[1]?.value || '',
+                vlan: ins[2]?.value || '',
+                color: ins[3]?.value || '',
+                obs: ins[4]?.value || ''
+            });
+        });
+        
+        let alimentacion = [];
+        Array.from(alimBody.rows).forEach(r => {
+            let ins = r.querySelectorAll('input');
+            let sel = r.querySelector('select');
+            alimentacion.push({
+                equipo: ins[0]?.value || '',
+                ups: sel?.value || 'No',
+                fase: ins[1]?.value || '',
+                obs: ins[2]?.value || ''
+            });
+        });
+        
+        let verificaciones = [];
+        let vrows = document.querySelectorAll('#tablaVerif tbody tr');
+        vrows.forEach(r => {
+            let sel = r.querySelector('select');
+            let ins = r.querySelectorAll('input');
+            verificaciones.push({
+                prueba: r.cells[0]?.innerText || '',
+                resultado: sel ? sel.value : (ins[0]?.value || ''),
+                notas: ins[ins.length - 1]?.value || ''
+            });
+        });
+        
+        return {
+            nombreProyecto: document.getElementById('nombreProyecto').value,
+            empresa: document.getElementById('empresa').value,
+            tecnico: document.getElementById('tecnico').value,
+            fechaInicio: document.getElementById('fechaInicio').value,
+            fechaFinPrev: document.getElementById('fechaFinPrev').value,
+            estadoProyecto: document.getElementById('estadoProyecto').value,
+            ubicacion: document.getElementById('ubicacion').value,
+            rackId: document.getElementById('rackId').value,
+            tipoRack: document.getElementById('tipoRack').value,
+            medidas: document.getElementById('medidas').value,
+            unidadesU: document.getElementById('unidadesU').value,
+            refri: document.getElementById('refri').value,
+            numPDU: document.getElementById('numPDU').value,
+            redundante: document.getElementById('redundante').value,
+            incidencias: document.getElementById('incidencias').value,
+            firmaTecnico: document.getElementById('firmaTecnico').value,
+            firmaCliente: document.getElementById('firmaCliente').value,
+            equipos, patching, alimentacion, verificaciones,
+            timestamp: Date.now()
+        };
+    }
+    
+    function loadFormData(data) {
+        if (!data) return;
+        document.getElementById('nombreProyecto').value = data.nombreProyecto || '';
+        document.getElementById('empresa').value = data.empresa || '';
+        document.getElementById('tecnico').value = data.tecnico || '';
+        document.getElementById('fechaInicio').value = data.fechaInicio || '';
+        document.getElementById('fechaFinPrev').value = data.fechaFinPrev || '';
+        document.getElementById('estadoProyecto').value = data.estadoProyecto || 'En ejecución';
+        document.getElementById('ubicacion').value = data.ubicacion || '';
+        document.getElementById('rackId').value = data.rackId || '';
+        document.getElementById('tipoRack').value = data.tipoRack || 'Abierto';
+        document.getElementById('medidas').value = data.medidas || '';
+        document.getElementById('unidadesU').value = data.unidadesU || '';
+        document.getElementById('refri').value = data.refri || 'Sí';
+        document.getElementById('numPDU').value = data.numPDU || '';
+        document.getElementById('redundante').value = data.redundante || 'No';
+        document.getElementById('incidencias').value = data.incidencias || '';
+        document.getElementById('firmaTecnico').value = data.firmaTecnico || '';
+        document.getElementById('firmaCliente').value = data.firmaCliente || '';
+        
+        equipoBody.innerHTML = '';
+        if (data.equipos?.length) {
+            data.equipos.forEach(e => addEquipoRow(e.equipo, e.modelo, e.serie, e.posicion, e.estado));
+        } else {
+            addEquipoRow('Switch principal', '', '', '', 'OK');
+        }
+        
+        patchBody.innerHTML = '';
+        if (data.patching?.length) {
+            data.patching.forEach(p => addPatchRow(p.puertoPP, p.puertoSwitch, p.vlan, p.color, p.obs));
+        } else {
+            addPatchRow('', '', '', '', '');
+        }
+        
+        alimBody.innerHTML = '';
+        if (data.alimentacion?.length) {
+            data.alimentacion.forEach(a => addAlimRow(a.equipo, a.ups, a.fase, a.obs));
+        } else {
+            addAlimRow('Switch 1', 'Sí', 'F1', '');
+        }
+        
+        if (data.verificaciones) {
+            let vrows = document.querySelectorAll('#tablaVerif tbody tr');
+            vrows.forEach((r, i) => {
+                if (data.verificaciones[i]) {
+                    let sel = r.querySelector('select');
+                    let ins = r.querySelectorAll('input');
+                    if (sel) sel.value = data.verificaciones[i].resultado || 'OK';
+                    if (ins[0]) ins[0].value = data.verificaciones[i].notas || '';
+                }
+            });
+        }
+        bindRemoveButtons();
+        saveLocal();
+    }
+    
+    function saveLocal() {
+        let data = captureFormData();
+        localStorage.setItem('rackProject_last', JSON.stringify(data));
+        const statusDiv = document.getElementById('statusMsg');
+        statusDiv.innerHTML = '✅ Guardado local: ' + new Date().toLocaleTimeString();
+        statusDiv.classList.remove('error');
+        return data;
+    }
+    
+    function loadLocal() {
+        let last = localStorage.getItem('rackProject_last');
+        if (last) {
+            loadFormData(JSON.parse(last));
+        } else {
+            addEquipoRow('Switch principal', '', '', '', 'OK');
+            addPatchRow('', '', '', '', '');
+            addAlimRow('Switch 1', 'Sí', 'F1', '');
+        }
+    }
+
+    // ============= GOOGLE SHEETS =============
+    function gapiLoaded() { 
+        gapi.load('client', initializeGapiClient); 
+    }
+    
+    async function initializeGapiClient() { 
+        await gapi.client.init({ apiKey: API_KEY, discoveryDocs: DISCOVERY_DOCS }); 
+        gapiInited = true; 
+        maybeEnableButtons(); 
+    }
+    
+    function gisLoaded() { 
+        tokenClient = google.accounts.oauth2.initTokenClient({ 
+            client_id: CLIENT_ID, 
+            scope: SCOPES, 
+            callback: '' 
+        }); 
+        gisInited = true; 
+        maybeEnableButtons(); 
+    }
+    
+    function maybeEnableButtons() { 
+        if (gapiInited && gisInited) { 
+            document.getElementById('guardarSheets').disabled = false; 
+            document.getElementById('cargarSheets').disabled = false; 
+        } 
+    }
+    
+    function loginGoogle() {
+        tokenClient.callback = async (resp) => { 
+            if (resp.error) throw resp; 
+            currentUser = resp; 
+            document.getElementById('userInfo').innerHTML = `✅ Conectado: ${resp.email || 'usuario'}`; 
+            const statusDiv = document.getElementById('statusMsg');
+            statusDiv.innerHTML = '✅ Conectado a Google. Puedes guardar/cargar en Sheets.';
+            statusDiv.classList.remove('error');
+            await listOrCreateSheet(); 
+        };
+        if (gapi.client.getToken() === null) {
+            tokenClient.requestAccessToken({ prompt: 'consent' });
+        } else {
+            tokenClient.requestAccessToken({ prompt: '' });
+        }
+    }
+    
+    async function listOrCreateSheet() {
+        try {
+            let searchResp = await gapi.client.drive.files.list({ 
+                q: "name='Rack_Instalaciones' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false", 
+                fields: "files(id,name)" 
+            });
+            let files = searchResp.result.files;
+            if (files && files.length > 0) { 
+                currentSpreadsheetId = files[0].id; 
+                document.getElementById('statusMsg').innerHTML = `📗 Hoja encontrada: ${files[0].name}`; 
+            } else { 
+                let fileMetadata = { 
+                    name: 'Rack_Instalaciones', 
+                    mimeType: 'application/vnd.google-apps.spreadsheet' 
+                }; 
+                let file = await gapi.client.drive.files.create({ resource: fileMetadata }); 
+                currentSpreadsheetId = file.result.id; 
+                document.getElementById('statusMsg').innerHTML = '✨ Creada nueva hoja: Rack_Instalaciones'; 
+                
+                // Crear las hojas iniciales
+                await gapi.client.sheets.spreadsheets.batchUpdate({
+                    spreadsheetId: currentSpreadsheetId,
+                    resource: {
+                        requests: [
+                            { addSheet: { properties: { title: 'Resumen' } } },
+                            { addSheet: { properties: { title: 'Equipos' } } },
+                            { addSheet: { properties: { title: 'Patching' } } },
+                            { addSheet: { properties: { title: 'Alimentacion' } } },
+                            { addSheet: { properties: { title: 'Verificaciones' } } }
+                        ]
+                    }
+                });
+            }
+        } catch(error) {
+            console.error('Error al listar/crear hoja:', error);
+            const statusDiv = document.getElementById('statusMsg');
+            statusDiv.innerHTML = '❌ Error al conectar con Drive: ' + (error.message || 'Error desconocido');
+            statusDiv.classList.add('error');
+            throw error;
+        }
+    }
+    
+    async function guardarEnSheets() {
+        if (!currentSpreadsheetId) {
+            await listOrCreateSheet();
+        }
+        
+        try {
+            let data = captureFormData();
+            
+            // Verificar y asegurar que las hojas existen
+            const spreadsheet = await gapi.client.sheets.spreadsheets.get({
+                spreadsheetId: currentSpreadsheetId
+            });
+            
+            const existingSheets = spreadsheet.result.sheets.map(s => s.properties.title);
+            const requiredSheets = ['Resumen', 'Equipos', 'Patching', 'Alimentacion', 'Verificaciones'];
+            
+            for (const sheetName of requiredSheets) {
+                if (!existingSheets.includes(sheetName)) {
+                    await gapi.client.sheets.spreadsheets.batchUpdate({
+                        spreadsheetId: currentSpreadsheetId,
+                        resource: {
+                            requests: [{
+                                addSheet: {
+                                    properties: { title: sheetName }
+                                }
+                            }]
+                        }
+                    });
+                    console.log(`📄 Hoja creada: ${sheetName}`);
+                }
+            }
+            
+            // 1. Guardar Resumen
+            let resumenValues = [[
+                data.nombreProyecto || '',
+                data.empresa || '',
+                data.tecnico || '',
+                data.fechaInicio || '',
+                data.fechaFinPrev || '',
+                data.estadoProyecto || '',
+                data.ubicacion || '',
+                data.rackId || '',
+                data.tipoRack || '',
+                data.medidas || '',
+                data.unidadesU || '',
+                data.refri || '',
+                data.numPDU || '',
+                data.redundante || '',
+                data.incidencias || '',
+                new Date().toLocaleString()
+            ]];
+            
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: currentSpreadsheetId,
+                range: 'Resumen!A1:P1',
+                valueInputOption: 'USER_ENTERED',
+                resource: { values: resumenValues }
+            });
+            
+            // 2. Guardar Equipos
+            let equiposRows = [["Equipo", "Modelo", "Nº Serie", "Posición U", "Estado"]];
+            if (data.equipos && data.equipos.length) {
+                data.equipos.forEach(e => {
+                    equiposRows.push([
+                        e.equipo || '',
+                        e.modelo || '',
+                        e.serie || '',
+                        e.posicion || '',
+                        e.estado || 'OK'
+                    ]);
+                });
+            } else {
+                equiposRows.push(["Sin equipos registrados", "", "", "", ""]);
+            }
+            
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: currentSpreadsheetId,
+                range: 'Equipos!A1:E100',
+                valueInputOption: 'USER_ENTERED',
+                resource: { values: equiposRows }
+            });
+            
+            // 3. Guardar Patching
+            let patchRows = [["Puerto Patch Panel", "Puerto Switch", "VLAN", "Color Cable", "Observaciones"]];
+            if (data.patching && data.patching.length) {
+                data.patching.forEach(p => {
+                    patchRows.push([
+                        p.puertoPP || '',
+                        p.puertoSwitch || '',
+                        p.vlan || '',
+                        p.color || '',
+                        p.obs || ''
+                    ]);
+                });
+            } else {
+                patchRows.push(["Sin conexiones registradas", "", "", "", ""]);
+            }
+            
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: currentSpreadsheetId,
+                range: 'Patching!A1:E100',
+                valueInputOption: 'USER_ENTERED',
+                resource: { values: patchRows }
+            });
+            
+            // 4. Guardar Alimentación
+            let alimRows = [["Equipo/PDU", "UPS", "Fase", "Observaciones"]];
+            if (data.alimentacion && data.alimentacion.length) {
+                data.alimentacion.forEach(a => {
+                    alimRows.push([
+                        a.equipo || '',
+                        a.ups || 'No',
+                        a.fase || '',
+                        a.obs || ''
+                    ]);
+                });
+            } else {
+                alimRows.push(["Sin alimentación registrada", "", "", ""]);
+            }
+            
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: currentSpreadsheetId,
+                range: 'Alimentacion!A1:D100',
+                valueInputOption: 'USER_ENTERED',
+                resource: { values: alimRows }
+            });
+            
+            // 5. Guardar Verificaciones
+            let verifRows = [["Prueba", "Resultado", "Notas"]];
+            if (data.verificaciones && data.verificaciones.length) {
+                data.verificaciones.forEach(v => {
+                    verifRows.push([
+                        v.prueba || '',
+                        v.resultado || '',
+                        v.notas || ''
+                    ]);
+                });
+            }
+            
+            await gapi.client.sheets.spreadsheets.values.update({
+                spreadsheetId: currentSpreadsheetId,
+                range: 'Verificaciones!A1:C100',
+                valueInputOption: 'USER_ENTERED',
+                resource: { values: verifRows }
+            });
+            
+            const statusDiv = document.getElementById('statusMsg');
+            statusDiv.innerHTML = '✅ Proyecto guardado correctamente en Google Sheets';
+            statusDiv.classList.remove('error');
+            alert('✅ Datos guardados correctamente en la hoja: Rack_Instalaciones\n\nAbre Google Drive para ver el archivo.');
+            
+        } catch (error) {
+            console.error('Error detallado:', error);
+            let errorMsg = error.result?.error?.message || error.message || 'Error desconocido';
+            const statusDiv = document.getElementById('statusMsg');
+            statusDiv.innerHTML = '❌ Error al guardar: ' + errorMsg;
+            statusDiv.classList.add('error');
+            alert('❌ Error al guardar: ' + errorMsg + '\n\nRevisa la consola (F12) para más detalles.');
+        }
+    }
+    
+    async function cargarDeSheets() {
+        if (!currentSpreadsheetId) {
+            await listOrCreateSheet();
+        }
+        
+        try {
+            let resumen = await gapi.client.sheets.spreadsheets.values.get({ 
+                spreadsheetId: currentSpreadsheetId, 
+                range: 'Resumen!A1:P1' 
+            });
+            let equiposRows = await gapi.client.sheets.spreadsheets.values.get({ 
+                spreadsheetId: currentSpreadsheetId, 
+                range: 'Equipos!A2:E100' 
+            });
+            let patchRows = await gapi.client.sheets.spreadsheets.values.get({ 
+                spreadsheetId: currentSpreadsheetId, 
+                range: 'Patching!A2:E100' 
+            });
+            let alimRows = await gapi.client.sheets.spreadsheets.values.get({ 
+                spreadsheetId: currentSpreadsheetId, 
+                range: 'Alimentacion!A2:D100' 
+            });
+            
+            if (resumen.result.values && resumen.result.values[0]) {
+                let vals = resumen.result.values[0];
+                let data = { 
+                    nombreProyecto: vals[0] || '', 
+                    empresa: vals[1] || '', 
+                    tecnico: vals[2] || '', 
+                    fechaInicio: vals[3] || '', 
+                    fechaFinPrev: vals[4] || '',
+                    estadoProyecto: vals[5] || 'En ejecución', 
+                    ubicacion: vals[6] || '', 
+                    rackId: vals[7] || '', 
+                    tipoRack: vals[8] || 'Abierto',
+                    medidas: vals[9] || '',
+                    unidadesU: vals[10] || '',
+                    refri: vals[11] || 'Sí',
+                    numPDU: vals[12] || '',
+                    redundante: vals[13] || 'No',
+                    incidencias: vals[14] || '', 
+                    equipos: [], 
+                    patching: [],
+                    alimentacion: []
+                };
+                
+                if (equiposRows.result.values) {
+                    data.equipos = equiposRows.result.values.map(r => ({ 
+                        equipo: r[0], modelo: r[1], serie: r[2], posicion: r[3], estado: r[4] 
+                    }));
+                }
+                if (patchRows.result.values) {
+                    data.patching = patchRows.result.values.map(r => ({ 
+                        puertoPP: r[0], puertoSwitch: r[1], vlan: r[2], color: r[3], obs: r[4] 
+                    }));
+                }
+                if (alimRows.result.values) {
+                    data.alimentacion = alimRows.result.values.map(r => ({ 
+                        equipo: r[0], ups: r[1], fase: r[2], obs: r[3] 
+                    }));
+                }
+                
+                loadFormData(data);
+                const statusDiv = document.getElementById('statusMsg');
+                statusDiv.innerHTML = '✅ Proyecto cargado desde Google Sheets';
+                statusDiv.classList.remove('error');
+                alert('✅ Datos cargados correctamente desde Google Sheets');
+            } else {
+                alert('No hay datos en la hoja Resumen');
+            }
+        } catch(error) {
+            console.error('Error al cargar:', error);
+            alert('❌ Error al cargar datos: ' + (error.result?.error?.message || error.message));
+        }
+    }
+
+    // ============= INICIALIZACIÓN =============
+    window.addEventListener('load', () => { 
+        loadLocal(); 
+        setInterval(saveLocal, 30000); 
+    });
+    
+    document.getElementById('guardarLocal').onclick = () => saveLocal();
+    document.getElementById('exportarJSON').onclick = () => { 
+        let d = captureFormData(); 
+        saveAs(new Blob([JSON.stringify(d, null, 2)], {type: 'application/json'}), `proyecto_${d.nombreProyecto || 'rack'}.json`); 
+    };
+    
+    document.getElementById('importarJSON').onclick = () => { 
+        let inp = document.createElement('input'); 
+        inp.type = 'file'; 
+        inp.accept = 'application/json'; 
+        inp.onchange = e => { 
+            let f = e.target.files[0]; 
+            let r = new FileReader(); 
+            r.onload = ev => loadFormData(JSON.parse(ev.target.result)); 
+            r.readAsText(f); 
+        }; 
+        inp.click(); 
+    };
+    
+    document.getElementById('nuevoProyecto').onclick = () => { 
+        if (confirm('¿Borrar todos los datos del proyecto actual?')) location.reload(); 
+    };
+    
+    document.getElementById('addEquipo').onclick = () => addEquipoRow('Nuevo equipo', '', '', '', 'OK');
+    document.getElementById('addPatch').onclick = () => addPatchRow('', '', '', '', '');
+    document.getElementById('addAlim').onclick = () => addAlimRow('Nuevo equipo', 'No', '', '');
+    document.getElementById('loginGoogle').onclick = loginGoogle;
+    document.getElementById('guardarSheets').onclick = guardarEnSheets;
+    document.getElementById('cargarSheets').onclick = cargarDeSheets;
+    
+    document.getElementById('generarExcel').onclick = () => { 
+        let wb = XLSX.utils.book_new(); 
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([captureFormData()]), "Proyecto"); 
+        XLSX.writeFile(wb, `rack_${captureFormData().nombreProyecto || 'proyecto'}.xlsx`); 
+    };
+    
+    document.getElementById('generarPDF').onclick = () => { 
+        alert('📄 Función PDF: Se generará en la próxima versión. Por ahora puedes usar Excel o Word.'); 
+    };
+    
+    document.getElementById('generarWord').onclick = () => { 
+        let content = document.getElementById('app').cloneNode(true);
+        content.querySelectorAll('.btn-group, .add-row-btn, .remove-row, .remove-row-patch, .remove-row-alim, #loginGoogle, #guardarSheets, #cargarSheets').forEach(el => el.remove());
+        let blob = new Blob([`<html><body>${content.innerHTML}</body></html>`], {type: 'application/msword'}); 
+        saveAs(blob, `proyecto_${captureFormData().nombreProyecto || 'rack'}.doc`); 
+    };
+    
+    bindRemoveButtons();
+
+    // Cargar Google APIs
+    const scriptGAPI = document.createElement('script'); 
+    scriptGAPI.src = 'https://apis.google.com/js/api.js'; 
+    scriptGAPI.onload = gapiLoaded; 
+    document.head.appendChild(scriptGAPI);
+    
+    const scriptGIS = document.createElement('script'); 
+    scriptGIS.src = 'https://accounts.google.com/gsi/client'; 
+    scriptGIS.onload = gisLoaded; 
+    document.head.appendChild(scriptGIS);
+</script>
+</body>
+</html>
