@@ -18,7 +18,7 @@
         body { font-family: 'Segoe UI', sans-serif; background: #eef2f7; margin: 0; padding: 20px; }
         .container { max-width: 1400px; margin: auto; background: white; border-radius: 20px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         h1 { color: #0a2472; border-bottom: 3px solid #0a2472; margin-top: 0; }
-        h2 { background: #e9ecef; padding: 8px 15px; border-radius: 8px; margin-top: 25px; font-size: 1.3rem; cursor: pointer; user-select: none; margin-bottom: 10px; }
+        h2 { background: #e9ecef; padding: 8px 15px; border-radius: 8px; margin-top: 25px; font-size: 1.3rem; cursor: pointer; user-select: none; margin-bottom: 0; }
         h2:hover { background: #dce3ec; }
         .toolbar { background: #f8f9fa; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; }
         .btn-group { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -29,7 +29,6 @@
         .btn-danger { background: #dc3545; }
         .btn-warning { background: #ffc107; color: #000; }
         .status-bar { background: #d4edda; padding: 8px 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.9rem; }
-        .status-bar.error { background: #f8d7da; color: #721c24; }
         table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.85rem; }
         th, td { border: 1px solid #ccc; padding: 8px; vertical-align: top; }
         th { background: #e2e8f0; font-weight: 600; }
@@ -40,33 +39,40 @@
         .sign-line { display: flex; gap: 20px; margin-top: 20px; }
         .sign-item { flex: 1; border-top: 1px solid #000; padding-top: 5px; text-align: center; }
         .add-row-btn { background: #28a745; font-size: 0.75rem; padding: 5px 12px; margin: 5px 0; }
-        .remove-row, .remove-row-patch, .remove-row-alim { background: #dc3545; font-size: 0.7rem; padding: 2px 8px; }
+        .remove-row { background: #dc3545; font-size: 0.7rem; padding: 2px 8px; }
         #userInfo { font-size: 0.8rem; font-weight: bold; }
         footer { text-align: center; margin-top: 30px; font-size: 0.75rem; color: #6c757d; }
+        
+        /* Estilos del rack */
         .rack-schema { background: #2c3e50; border-radius: 16px; padding: 20px; margin: 15px 0; border: 2px solid #1a252f; }
         .rack-title { color: white; text-align: center; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; }
-        .rack-grid { display: flex; flex-direction: column-reverse; border: 3px solid #7f8c8d; border-radius: 8px; overflow: hidden; background: #34495e; }
-        .rack-unit { border-bottom: 1px solid #5d6d7e; display: flex; min-height: 36px; }
-        .rack-unit:last-child { border-bottom: none; }
+        .rack-grid { display: flex; flex-direction: column; border: 3px solid #7f8c8d; border-radius: 8px; overflow: hidden; background: #34495e; }
+        .rack-unit { border-bottom: 1px solid #5d6d7e; display: flex; min-height: 40px; }
         .unit-number { width: 45px; background: #1a252f; color: #bdc3c7; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; border-right: 1px solid #5d6d7e; }
-        .unit-equipment { flex: 1; background: #ecf0f1; cursor: pointer; transition: 0.1s; display: flex; align-items: center; padding: 0 12px; font-size: 0.8rem; font-weight: 500; border-bottom: 1px solid #ddd; }
-        .unit-equipment:hover { background: #d5dbdb; }
+        .unit-equipment { flex: 1; cursor: pointer; transition: 0.1s; display: flex; align-items: center; padding: 0 12px; font-size: 0.75rem; font-weight: 500; border-left: 4px solid transparent; }
+        .unit-equipment:hover { filter: brightness(0.95); }
         .unit-equipment.empty { background: #fdfefe; color: #95a5a6; font-style: italic; justify-content: center; }
-        .unit-equipment.error { background: #f5c6cb; color: #721c24; border-left: 4px solid #dc3545; }
-        .rack-legend { display: flex; gap: 20px; justify-content: center; margin-top: 15px; color: white; font-size: 0.75rem; }
-        .legend-color { display: inline-block; width: 16px; height: 16px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
-        .collapsible-content { display: block; }
-        .collapsed .collapsible-content { display: none; }
-        .galeria-img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer; margin: 5px; border: 2px solid transparent; }
-        .galeria-img:hover { transform: scale(1.05); border-color: #0a2472; }
+        .unit-equipment.switch { background: #3498db; color: white; border-left-color: #1f618d; }
+        .unit-equipment.patch { background: #2ecc71; color: white; border-left-color: #1e8449; }
+        .unit-equipment.server { background: #9b59b6; color: white; border-left-color: #6c3483; }
+        .unit-equipment.router { background: #e67e22; color: white; border-left-color: #a04000; }
+        .unit-equipment.storage { background: #1abc9c; color: white; border-left-color: #0e6655; }
+        .unit-equipment.error { background: #e74c3c; color: white; border-left-color: #922b21; }
+        .rack-legend { display: flex; gap: 15px; justify-content: center; margin-top: 15px; color: white; font-size: 0.7rem; flex-wrap: wrap; }
+        .legend-color { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 4px; vertical-align: middle; }
+        
+        /* IMPORTANTE: Clases para colapsar */
+        .collapsible-content { display: block; margin-top: 10px; }
+        .collapsible-content.collapsed { display: none; }
+        
+        .orientation-selector { display: flex; gap: 10px; align-items: center; margin: 10px 0; background: #ecf0f1; padding: 8px; border-radius: 8px; }
+        .qr-container { display: inline-block; margin: 5px; text-align: center; }
+        canvas { max-width: 100%; height: auto; background: #f8f9fa; border-radius: 8px; margin: 10px 0; }
         .notification { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: 8px; color: white; z-index: 9999; box-shadow: 0 2px 10px rgba(0,0,0,0.2); animation: slideIn 0.3s ease; }
         .notification.success { background: #28a745; }
         .notification.error { background: #dc3545; }
         .notification.info { background: #0a2472; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .search-bar { background: #fff; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #ddd; }
-        .qr-container { display: inline-block; margin: 5px; text-align: center; }
-        canvas { max-width: 100%; height: auto; background: #f8f9fa; border-radius: 8px; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -114,86 +120,85 @@
         <div class="flex-item"><label>❄️ Refrigeración:</label> <select id="refri"><option>Sí</option><option>No</option></select></div>
     </div>
 
+    <!-- Selector de orientación del rack -->
+    <div class="orientation-selector">
+        <span>🔧 Orientación del rack:</span>
+        <label><input type="radio" name="rackOrientation" value="bottom-up" checked> U1 abajo (estándar)</label>
+        <label><input type="radio" name="rackOrientation" value="top-down"> U1 arriba</label>
+        <button id="refrescarRack" style="background:#3498db; padding: 4px 12px;">🔄 Refrescar</button>
+    </div>
+
     <!-- Gráfico estadístico -->
-    <h2 onclick="toggleCollapse(this)">📊 ESTADÍSTICAS ▼</h2>
-    <div class="collapsible-content">
+    <h2 id="estadisticasHeader">📊 ESTADÍSTICAS ▼</h2>
+    <div id="estadisticasContent" class="collapsible-content">
         <canvas id="graficoEstado" width="400" height="150" style="max-width:100%; height:auto; background:#f8f9fa; border-radius:8px; padding:10px;"></canvas>
         <div id="resumenEstadisticas" style="margin-top:10px; font-size:0.9rem;"></div>
     </div>
 
     <!-- Esquema visual del rack -->
-    <h2 onclick="toggleCollapse(this)">🗄️ ESQUEMA VISUAL DEL RACK ▼</h2>
-    <div class="collapsible-content">
+    <h2 id="rackVisualHeader">🗄️ ESQUEMA VISUAL DEL RACK ▼</h2>
+    <div id="rackVisualContent" class="collapsible-content">
         <div id="rackContainer" class="rack-schema"></div>
-        <div style="display: flex; gap: 10px; margin: 10px 0;">
-            <button id="crearEquipoDesdeRack" class="btn-success">➕ Crear equipo desde esquema</button>
-            <button id="sincronizarEquipos" style="background:#3498db;">🔄 Sincronizar con tabla</button>
+        <div style="display: flex; gap: 10px; margin: 10px 0; flex-wrap: wrap;">
+            <button id="crearEquipoDesdeRack" class="btn-success">➕ Crear equipo</button>
+            <button id="sincronizarEquipos" style="background:#3498db;">🔄 Sincronizar</button>
         </div>
         <div class="rack-legend">
-            <span><span class="legend-color" style="background:#ecf0f1;"></span> Equipo OK</span>
-            <span><span class="legend-color" style="background:#f5c6cb;"></span> Equipo Error</span>
-            <span><span class="legend-color" style="background:#fdfefe; border:1px solid #95a5a6;"></span> Vacío</span>
+            <span><span class="legend-color" style="background:#3498db;"></span> Switch</span>
+            <span><span class="legend-color" style="background:#2ecc71;"></span> Patch Panel</span>
+            <span><span class="legend-color" style="background:#9b59b6;"></span> Servidor</span>
+            <span><span class="legend-color" style="background:#e67e22;"></span> Router</span>
+            <span><span class="legend-color" style="background:#1abc9c;"></span> Almacenamiento</span>
+            <span><span class="legend-color" style="background:#ecf0f1;"></span> Vacío</span>
         </div>
     </div>
 
-    <!-- Búsqueda y equipos -->
-    <h2 onclick="toggleCollapse(this)">🖥️ EQUIPOS ▼</h2>
-    <div class="collapsible-content">
-        <div class="search-bar">
+    <!-- Tabla de equipos -->
+    <h2 id="equiposHeader">🖥️ EQUIPOS ▼</h2>
+    <div id="equiposContent" class="collapsible-content">
+        <div class="search-bar" style="background:#fff; padding:10px; border-radius:8px; margin-bottom:15px;">
             <div class="flex-row">
                 <div class="flex-item"><input type="text" id="buscarEquipo" placeholder="🔍 Buscar..."></div>
-                <div class="flex-item"><select id="filtroEstado"><option value="">Todos</option><option>OK</option><option>Error</option></select></div>
+                <div class="flex-item"><select id="filtroTipo"><option value="">Todos los tipos</option><option value="switch">Switch</option><option value="patch">Patch Panel</option><option value="server">Servidor</option><option value="router">Router</option><option value="storage">Almacenamiento</option></select></div>
                 <button id="aplicarFiltro" style="background:#3498db;">Filtrar</button>
             </div>
         </div>
         <table id="tablaEquipos">
-            <thead><tr><th>Nº</th><th>Equipo</th><th>Modelo</th><th>Nº Serie</th><th>Posición U</th><th>Estado</th><th>QR</th><th></th></tr></thead>
+            <thead><tr><th>Nº</th><th>Equipo</th><th>Tipo</th><th>Modelo</th><th>Serie</th><th>U inicio</th><th>Altura (U)</th><th>Estado</th><th>QR</th><th></th></tr></thead>
             <tbody></tbody>
         </table>
-        <button id="addEquipo" class="add-row-btn">➕ Añadir equipo</button>
+        <div class="flex-row" style="margin-top:10px;">
+            <button id="addEquipo" class="add-row-btn">➕ Añadir equipo</button>
+            <button id="ordenarEquipos" style="background:#3498db;">📐 Ordenar por posición</button>
+        </div>
     </div>
 
-    <h2 onclick="toggleCollapse(this)">🔌 PATCHING ▼</h2>
-    <div class="collapsible-content">
-        <table id="tablaPatching">
-            <thead><tr><th>Puerto PP</th><th>Puerto Switch</th><th>VLAN</th><th>Color</th><th>Observaciones</th><th></th></tr></thead>
-            <tbody></tbody>
-        </table>
+    <h2 id="patchingHeader">🔌 PATCHING ▼</h2>
+    <div id="patchingContent" class="collapsible-content">
+        <table id="tablaPatching"><thead><tr><th>Puerto PP</th><th>Puerto Switch</th><th>VLAN</th><th>Color</th><th>Observaciones</th><th></th></tr></thead><tbody></tbody></table>
         <button id="addPatch" class="add-row-btn">➕ Añadir conexión</button>
     </div>
 
-    <h2 onclick="toggleCollapse(this)">⚡ ALIMENTACIÓN ▼</h2>
-    <div class="collapsible-content">
-        <div class="flex-row">
-            <div class="flex-item"><label>Nº PDUs:</label> <input type="text" id="numPDU"></div>
-            <div class="flex-item"><label>Redundante:</label> <select id="redundante"><option>No</option><option>Sí</option></select></div>
-        </div>
-        <table id="tablaAlimentacion">
-            <thead><tr><th>Equipo</th><th>UPS</th><th>Fase</th><th>Observaciones</th><th></th></tr></thead>
-            <tbody></tbody>
-        </table>
+    <h2 id="alimentacionHeader">⚡ ALIMENTACIÓN ▼</h2>
+    <div id="alimentacionContent" class="collapsible-content">
+        <div class="flex-row"><div class="flex-item"><label>Nº PDUs:</label> <input type="text" id="numPDU"></div><div class="flex-item"><label>Redundante:</label> <select id="redundante"><option>No</option><option>Sí</option></select></div></div>
+        <table id="tablaAlimentacion"><thead><tr><th>Equipo</th><th>UPS</th><th>Fase</th><th>Observaciones</th><th></th></tr></thead><tbody></tbody></table>
         <button id="addAlim" class="add-row-btn">➕ Añadir</button>
     </div>
 
-    <h2 onclick="toggleCollapse(this)">📷 GALERÍA ▼</h2>
-    <div class="collapsible-content">
-        <div class="photo-area">
-            <input type="file" id="subirImagenes" accept="image/*" multiple>
-            <div id="galeriaPreview" style="display: flex; flex-wrap: wrap; margin-top: 15px;"></div>
-        </div>
+    <h2 id="galeriaHeader">📷 GALERÍA ▼</h2>
+    <div id="galeriaContent" class="collapsible-content">
+        <div class="photo-area"><input type="file" id="subirImagenes" accept="image/*" multiple><div id="galeriaPreview" style="display: flex; flex-wrap: wrap; margin-top: 15px;"></div></div>
     </div>
 
-    <h2 onclick="toggleCollapse(this)">📜 HISTORIAL ▼</h2>
-    <div class="collapsible-content">
-        <table id="tablaHistorial">
-            <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead>
-            <tbody></tbody>
-        </table>
+    <h2 id="historialHeader">📜 HISTORIAL ▼</h2>
+    <div id="historialContent" class="collapsible-content">
+        <table id="tablaHistorial"><thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead><tbody></tbody></table>
         <button id="limpiarHistorial" class="btn-danger">🗑️ Limpiar</button>
     </div>
 
-    <h2 onclick="toggleCollapse(this)">✅ VERIFICACIONES ▼</h2>
-    <div class="collapsible-content">
+    <h2 id="verificacionesHeader">✅ VERIFICACIONES ▼</h2>
+    <div id="verificacionesContent" class="collapsible-content">
         <table id="tablaVerif">
             <thead><tr><th>Prueba</th><th>Resultado</th><th>Notas</th></tr></thead>
             <tbody>
@@ -205,8 +210,8 @@
         </table>
     </div>
 
-    <h2 onclick="toggleCollapse(this)">📝 INCIDENCIAS ▼</h2>
-    <div class="collapsible-content">
+    <h2 id="incidenciasHeader">📝 INCIDENCIAS ▼</h2>
+    <div id="incidenciasContent" class="collapsible-content">
         <textarea rows="3" id="incidencias" style="width:100%" placeholder="Registro de cambios..."></textarea>
     </div>
 
@@ -224,8 +229,51 @@
 </div>
 
 <script>
+    // ============= FUNCIÓN CORREGIDA: DESPLEGAR/CONTRAER SECCIONES =============
+    // Esta es la función clave - ahora funciona correctamente
+    function toggleSection(headerId, contentId) {
+        const header = document.getElementById(headerId);
+        const content = document.getElementById(contentId);
+        if (!header || !content) return;
+        
+        // Alternar la clase collapsed en el contenido
+        content.classList.toggle('collapsed');
+        
+        // Cambiar la flecha
+        const arrow = content.classList.contains('collapsed') ? '▶' : '▼';
+        // Reemplazar solo la flecha manteniendo el texto
+        header.innerHTML = header.innerHTML.replace(/[▼▶]/, arrow);
+    }
+
+    // Configurar todos los eventos click de las secciones
+    function setupCollapsibleSections() {
+        const sections = [
+            { header: 'estadisticasHeader', content: 'estadisticasContent' },
+            { header: 'rackVisualHeader', content: 'rackVisualContent' },
+            { header: 'equiposHeader', content: 'equiposContent' },
+            { header: 'patchingHeader', content: 'patchingContent' },
+            { header: 'alimentacionHeader', content: 'alimentacionContent' },
+            { header: 'galeriaHeader', content: 'galeriaContent' },
+            { header: 'historialHeader', content: 'historialContent' },
+            { header: 'verificacionesHeader', content: 'verificacionesContent' },
+            { header: 'incidenciasHeader', content: 'incidenciasContent' }
+        ];
+        
+        sections.forEach(section => {
+            const header = document.getElementById(section.header);
+            if (header) {
+                // Eliminar eventos anteriores para evitar duplicados
+                const newHeader = header.cloneNode(true);
+                header.parentNode.replaceChild(newHeader, header);
+                const newHeaderId = document.getElementById(section.header);
+                if (newHeaderId) {
+                    newHeaderId.onclick = () => toggleSection(section.header, section.content);
+                }
+            }
+        });
+    }
+
     // ============= CONFIGURACIÓN =============
-    // ⚠️ REEMPLAZA CON TUS CREDENCIALES REALES ⚠️
     const API_KEY = 'AIzaSyB9kHrNJXmQvCF7PMifJiInA2NB5Q1Jnno';
     const CLIENT_ID = '705581030720-42ofnt76tittia0cp6h1786mjgujtnb9.apps.googleusercontent.com';
     const DISCOVERY_DOCS = ["https://sheets.googleapis.com/$discovery/rest?version=v4", "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
@@ -245,155 +293,119 @@
         setTimeout(() => notif.remove(), 3000);
     }
 
-    // ============= HISTORIAL =============
-    function registrarCambio(accion, detalle) {
-        let historial = JSON.parse(localStorage.getItem('rack_historial') || '[]');
-        historial.unshift({
-            fecha: new Date().toLocaleString(),
-            usuario: document.getElementById('tecnico')?.value || 'usuario',
-            accion: accion,
-            detalle: detalle
-        });
-        if (historial.length > 100) historial.pop();
-        localStorage.setItem('rack_historial', JSON.stringify(historial));
-        renderHistorial();
+    // ============= ORIENTACIÓN DEL RACK =============
+    function getRackOrientation() {
+        const radio = document.querySelector('input[name="rackOrientation"]:checked');
+        return radio ? radio.value : 'bottom-up';
     }
 
-    function renderHistorial() {
-        let historial = JSON.parse(localStorage.getItem('rack_historial') || '[]');
-        let tbody = document.querySelector('#tablaHistorial tbody');
-        if (tbody) {
-            tbody.innerHTML = '';
-            historial.forEach(h => {
-                let row = tbody.insertRow();
-                row.innerHTML = `<td>${h.fecha}</td><td>${h.usuario}</td><td>${h.accion}</td><td>${h.detalle}</td>`;
+    // ============= TIPO DE EQUIPO A CLASE CSS =============
+    function getTipoClass(tipo) {
+        const tipos = { 'switch': 'switch', 'patch': 'patch', 'server': 'server', 'router': 'router', 'storage': 'storage' };
+        return tipos[tipo] || 'switch';
+    }
+
+    function getTipoIcono(tipo) {
+        const iconos = { 'switch': '🔌', 'patch': '🔌', 'server': '🖥️', 'router': '🌐', 'storage': '💾' };
+        return iconos[tipo] || '📡';
+    }
+
+    // ============= RENDERIZADO DEL RACK =============
+    function getTotalU() {
+        const unidadesU = document.getElementById('unidadesU')?.value || '42U';
+        const match = unidadesU.match(/(\d+)/);
+        return match ? parseInt(match[1]) : 42;
+    }
+
+    function renderRackVisual() {
+        const totalU = getTotalU();
+        const orientation = getRackOrientation();
+        const equipos = [];
+        Array.from(equipoBody.rows).forEach(r => {
+            equipos.push({
+                nombre: r.cells[1]?.querySelector('input')?.value || '',
+                tipo: r.cells[2]?.querySelector('select')?.value || 'switch',
+                modelo: r.cells[3]?.querySelector('input')?.value || '',
+                posicion: parseInt(r.cells[5]?.querySelector('input')?.value) || 0,
+                altura: parseInt(r.cells[6]?.querySelector('input')?.value) || 1,
+                estado: r.cells[7]?.querySelector('select')?.value || 'OK'
             });
+        });
+        
+        const rackContainer = document.getElementById('rackContainer');
+        if (!rackContainer) return;
+        
+        let occupied = new Array(totalU + 1).fill(null);
+        equipos.forEach(eq => {
+            if (eq.posicion >= 1 && eq.posicion <= totalU) {
+                for (let i = 0; i < eq.altura; i++) {
+                    if (eq.posicion + i <= totalU && !occupied[eq.posicion + i]) {
+                        occupied[eq.posicion + i] = { ...eq, esInicio: i === 0, alturaRestante: eq.altura - i };
+                    }
+                }
+            }
+        });
+        
+        let uInicio = orientation === 'bottom-up' ? 1 : totalU;
+        let uFin = orientation === 'bottom-up' ? totalU : 1;
+        let step = orientation === 'bottom-up' ? 1 : -1;
+        
+        let html = `<div class="rack-schema"><div class="rack-title">🗄️ RACK - ${totalU}U (U1 ${orientation === 'bottom-up' ? 'abajo' : 'arriba'})</div><div class="rack-grid">`;
+        
+        for (let u = uInicio; u !== uFin + step; u += step) {
+            const eq = occupied[u];
+            let estadoClass = '';
+            let displayText = '';
+            
+            if (eq) {
+                const tipoClass = getTipoClass(eq.tipo);
+                estadoClass = eq.estado === 'Error' ? 'error' : tipoClass;
+                if (!eq.esInicio && eq.alturaRestante > 1) {
+                    displayText = `↕️ Continúa ${eq.nombre}`;
+                } else {
+                    const icono = getTipoIcono(eq.tipo);
+                    displayText = `${icono} ${eq.nombre} ${eq.altura > 1 ? `(${eq.altura}U)` : ''}`;
+                }
+                if (eq.estado === 'Error') estadoClass = 'error';
+            } else {
+                estadoClass = 'empty';
+                displayText = `U${u} - Vacío`;
+            }
+            
+            html += `<div class="rack-unit">
+                <div class="unit-number">U${u}</div>
+                <div class="unit-equipment ${estadoClass}" onclick="editarEquipoDesdeRack(${u})">
+                    ${displayText}
+                </div>
+            </div>`;
         }
-    }
-
-    // ============= GRÁFICOS =============
-    function renderGraficos() {
-        const canvas = document.getElementById('graficoEstado');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        const equipos = Array.from(equipoBody.rows);
-        const ok = equipos.filter(r => r.cells[5]?.querySelector('select')?.value === 'OK').length;
-        const error = equipos.filter(r => r.cells[5]?.querySelector('select')?.value === 'Error').length;
-        const total = ok + error || 1;
-        canvas.width = 400; canvas.height = 150;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#28a745';
-        ctx.fillRect(0, 0, (ok / total) * canvas.width, 40);
-        ctx.fillStyle = '#dc3545';
-        ctx.fillRect((ok / total) * canvas.width, 0, (error / total) * canvas.width, 40);
-        ctx.fillStyle = '#000';
-        ctx.font = '12px Arial';
-        ctx.fillText(`✅ OK: ${ok} (${Math.round(ok/total*100)}%)`, 10, 25);
-        ctx.fillText(`❌ Error: ${error} (${Math.round(error/total*100)}%)`, 10, 55);
-        const resumenDiv = document.getElementById('resumenEstadisticas');
-        if (resumenDiv) resumenDiv.innerHTML = `📊 Total equipos: ${total} | OK: ${ok} | Error: ${error}`;
-    }
-
-    // ============= QR =============
-    function generarQR(equipo, serie, posicion) {
-        const qrDiv = document.createElement('div');
-        qrDiv.className = 'qr-container';
-        const qrData = `Equipo: ${equipo}\nSerie: ${serie}\nPosición: ${posicion}\nProyecto: ${document.getElementById('nombreProyecto')?.value || ''}\nFecha: ${new Date().toLocaleDateString()}`;
-        try { new QRCode(qrDiv, { text: qrData, width: 50, height: 50 }); } catch(e) { qrDiv.innerText = 'QR'; }
-        return qrDiv;
-    }
-
-    // ============= PDF PROFESIONAL =============
-    async function generarPDFProfesional() {
-        try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-            const data = captureFormData();
-            let y = 20;
-            doc.setFontSize(20);
-            doc.setTextColor(10, 36, 114);
-            doc.text("INFORME INSTALACIÓN DE RACK", 20, y);
-            y += 10;
-            doc.setFontSize(11);
-            doc.setTextColor(0, 0, 0);
-            doc.text(`Proyecto: ${data.nombreProyecto || '-'}`, 20, y);
-            doc.text(`Empresa: ${data.empresa || '-'}`, 120, y);
-            y += 7;
-            doc.text(`Técnico: ${data.tecnico || '-'}`, 20, y);
-            doc.text(`Fecha: ${data.fechaInicio || '-'}`, 120, y);
-            y += 10;
-            doc.setFontSize(12);
-            doc.setTextColor(10, 36, 114);
-            doc.text("EQUIPOS INSTALADOS", 20, y);
-            y += 5;
-            let equiposBody = (data.equipos || []).map(e => [e.equipo || '-', e.modelo || '-', e.serie || '-', e.posicion || '-', e.estado || '-']);
-            if (equiposBody.length === 0) equiposBody = [['No hay equipos', '', '', '', '']];
-            doc.autoTable({
-                startY: y,
-                head: [['Equipo', 'Modelo', 'Nº Serie', 'Posición U', 'Estado']],
-                body: equiposBody,
-                theme: 'grid',
-                styles: { fontSize: 8 },
-                headStyles: { fillColor: [10, 36, 114], textColor: 255 }
-            });
-            y = doc.lastAutoTable.finalY + 10;
-            doc.text(`Incidencias: ${(data.incidencias || '').substring(0, 200)}`, 20, y);
-            y += 10;
-            doc.line(20, y, 80, y);
-            doc.text(data.firmaTecnico || "Técnico", 20, y + 5);
-            doc.line(120, y, 180, y);
-            doc.text(data.firmaCliente || "Cliente", 120, y + 5);
-            doc.save(`informe_${data.nombreProyecto || 'rack'}.pdf`);
-            mostrarNotificacion('PDF generado correctamente', 'success');
-        } catch(e) { mostrarNotificacion('Error al generar PDF', 'error'); console.error(e); }
-    }
-
-    // ============= BACKUP AUTOMÁTICO =============
-    function backupAutomatico() {
-        try {
-            const data = captureFormData();
-            localStorage.setItem('rack_backup_diario', JSON.stringify(data));
-            localStorage.setItem('rack_backup_fecha', new Date().toISOString());
-        } catch(e) { console.error('Backup error:', e); }
-    }
-    setInterval(backupAutomatico, 86400000);
-    backupAutomatico();
-
-    // ============= FILTROS =============
-    function aplicarFiltros() {
-        const searchText = document.getElementById('buscarEquipo')?.value.toLowerCase() || '';
-        const estadoFiltro = document.getElementById('filtroEstado')?.value || '';
-        Array.from(equipoBody.rows).forEach(row => {
-            const nombre = row.cells[1]?.querySelector('input')?.value?.toLowerCase() || '';
-            const modelo = row.cells[2]?.querySelector('input')?.value?.toLowerCase() || '';
-            const estado = row.cells[5]?.querySelector('select')?.value || '';
-            const matchSearch = nombre.includes(searchText) || modelo.includes(searchText);
-            const matchEstado = !estadoFiltro || estado === estadoFiltro;
-            row.style.display = (matchSearch && matchEstado) ? '' : 'none';
-        });
+        html += `</div></div>`;
+        rackContainer.innerHTML = html;
     }
 
     // ============= FUNCIONES PRINCIPALES =============
-    function addEquipoRow(equipo = '', modelo = '', serie = '', posicion = '', estado = 'OK') {
+    function addEquipoRow(equipo = '', tipo = 'switch', modelo = '', serie = '', posicion = '', altura = '1', estado = 'OK') {
         let row = equipoBody.insertRow();
         let num = equipoBody.rows.length;
         row.innerHTML = `
             <td>${num}</td>
             <td><input value="${escapeHtml(equipo)}"></td>
+            <td><select><option value="switch" ${tipo==='switch'?'selected':''}>🔌 Switch</option><option value="patch" ${tipo==='patch'?'selected':''}>🔌 Patch Panel</option><option value="server" ${tipo==='server'?'selected':''}>🖥️ Servidor</option><option value="router" ${tipo==='router'?'selected':''}>🌐 Router</option><option value="storage" ${tipo==='storage'?'selected':''}>💾 Almacenamiento</option></select></td>
             <td><input value="${escapeHtml(modelo)}"></td>
             <td><input value="${escapeHtml(serie)}"></td>
-            <td><input value="${escapeHtml(posicion)}"></td>
+            <td><input value="${escapeHtml(posicion)}" type="number" step="1" style="width:70px"></td>
+            <td><input value="${escapeHtml(altura)}" type="number" step="1" min="1" max="20" style="width:70px"></td>
             <td><select>${estado === 'OK' ? '<option selected>OK</option><option>Error</option>' : '<option>OK</option><option selected>Error</option>'}</select></td>
             <td class="qr-cell"></td>
             <td><button class="remove-row">🗑️</button></td>
         `;
-        const qrCell = row.cells[6];
+        const qrCell = row.cells[8];
         if (qrCell) qrCell.appendChild(generarQR(equipo, serie, posicion));
         bindRemoveButtons();
         renumEquipos();
         renderRackVisual();
         renderGraficos();
-        registrarCambio('Equipo añadido', `${equipo} en U${posicion}`);
+        registrarCambio('Equipo añadido', `${equipo} (${altura}U) en U${posicion}`);
     }
 
     function addPatchRow(pp = '', sw = '', vlan = '', color = '', obs = '') {
@@ -424,39 +436,19 @@
     function renumEquipos() { Array.from(equipoBody.rows).forEach((r, i) => r.cells[0].innerText = i + 1); }
     function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
 
-    function getTotalU() {
-        const unidadesU = document.getElementById('unidadesU')?.value || '42U';
-        const match = unidadesU.match(/(\d+)/);
-        return match ? parseInt(match[1]) : 42;
-    }
-
-    function renderRackVisual() {
-        const totalU = getTotalU();
-        const equipos = Array.from(equipoBody.rows).map(r => ({
-            nombre: r.cells[1]?.querySelector('input')?.value || '',
-            posicion: r.cells[4]?.querySelector('input')?.value || '',
-            estado: r.cells[5]?.querySelector('select')?.value || 'OK'
-        }));
-        const rackContainer = document.getElementById('rackContainer');
-        if (!rackContainer) return;
-        const occupied = new Array(totalU + 1).fill(null);
-        equipos.forEach(eq => { const u = parseInt(eq.posicion); if (u && u >= 1 && u <= totalU) occupied[u] = eq; });
-        let html = `<div class="rack-schema"><div class="rack-title">🗄️ RACK - ${totalU}U</div><div class="rack-grid">`;
-        for (let u = totalU; u >= 1; u--) {
-            const eq = occupied[u];
-            const estadoClass = eq ? (eq.estado === 'Error' ? 'error' : '') : 'empty';
-            const displayText = eq ? `U${u}: ${eq.nombre.substring(0, 30)}` : `U${u} - Vacío`;
-            html += `<div class="rack-unit"><div class="unit-number">U${u}</div><div class="unit-equipment ${estadoClass}" onclick="editarEquipoDesdeRack(${u})">${displayText}</div></div>`;
-        }
-        html += `</div></div>`;
-        rackContainer.innerHTML = html;
+    function generarQR(equipo, serie, posicion) {
+        const qrDiv = document.createElement('div');
+        qrDiv.className = 'qr-container';
+        const qrData = `Equipo: ${equipo}\nSerie: ${serie}\nPosición: ${posicion}\nProyecto: ${document.getElementById('nombreProyecto')?.value || ''}\nFecha: ${new Date().toLocaleDateString()}`;
+        try { new QRCode(qrDiv, { text: qrData, width: 50, height: 50 }); } catch(e) { qrDiv.innerText = 'QR'; }
+        return qrDiv;
     }
 
     window.editarEquipoDesdeRack = function(u) {
-        const equiposRows = Array.from(equipoBody.rows);
+        let equiposRows = Array.from(equipoBody.rows);
         let equipoEncontrado = null;
         for (let i = 0; i < equiposRows.length; i++) {
-            const posInput = equiposRows[i].cells[4]?.querySelector('input');
+            let posInput = equiposRows[i].cells[5]?.querySelector('input');
             if (posInput && parseInt(posInput.value) === u) { equipoEncontrado = equiposRows[i]; break; }
         }
         if (equipoEncontrado) {
@@ -464,10 +456,13 @@
             const nuevoNombre = prompt(`Editar equipo en U${u}`, nombre);
             if (nuevoNombre && nuevoNombre.trim() !== '') {
                 equipoEncontrado.cells[1].querySelector('input').value = nuevoNombre;
-                const nuevoModelo = prompt("Modelo:", equipoEncontrado.cells[2]?.querySelector('input')?.value || '');
-                if (nuevoModelo !== null) equipoEncontrado.cells[2].querySelector('input').value = nuevoModelo;
-                const nuevaSerie = prompt("Nº Serie:", equipoEncontrado.cells[3]?.querySelector('input')?.value || '');
-                if (nuevaSerie !== null) equipoEncontrado.cells[3].querySelector('input').value = nuevaSerie;
+                const nuevoTipo = prompt("Tipo (switch/patch/server/router/storage):", equipoEncontrado.cells[2]?.querySelector('select')?.value || 'switch');
+                if (nuevoTipo && ['switch','patch','server','router','storage'].includes(nuevoTipo)) 
+                    equipoEncontrado.cells[2].querySelector('select').value = nuevoTipo;
+                const nuevoModelo = prompt("Modelo:", equipoEncontrado.cells[3]?.querySelector('input')?.value || '');
+                if (nuevoModelo !== null) equipoEncontrado.cells[3].querySelector('input').value = nuevoModelo;
+                const nuevaAltura = prompt("Altura en U (1-20):", equipoEncontrado.cells[6]?.querySelector('input')?.value || '1');
+                if (nuevaAltura !== null) equipoEncontrado.cells[6].querySelector('input').value = nuevaAltura;
                 saveLocal();
                 renderRackVisual();
                 renderGraficos();
@@ -475,21 +470,51 @@
             }
         } else {
             const nombre = prompt(`Añadir equipo en U${u}`, "Nuevo equipo");
-            if (nombre && nombre.trim() !== '') { addEquipoRow(nombre, '', '', u.toString(), 'OK'); saveLocal(); }
+            if (nombre && nombre.trim() !== '') { 
+                const altura = prompt("Altura en U:", "1");
+                addEquipoRow(nombre, 'switch', '', '', u.toString(), altura || '1', 'OK');
+                saveLocal();
+            }
         }
     };
 
-    function sincronizarEquiposConTabla() { renderRackVisual(); saveLocal(); mostrarNotificacion('Esquema sincronizado', 'success'); }
+    function ordenarEquiposPorPosicion() {
+        let rows = Array.from(equipoBody.rows);
+        rows.sort((a, b) => {
+            let posA = parseInt(a.cells[5]?.querySelector('input')?.value) || 999;
+            let posB = parseInt(b.cells[5]?.querySelector('input')?.value) || 999;
+            return posA - posB;
+        });
+        rows.forEach(row => equipoBody.appendChild(row));
+        renumEquipos();
+        saveLocal();
+        renderRackVisual();
+        mostrarNotificacion('Equipos ordenados por posición', 'success');
+    }
+
+    function aplicarFiltros() {
+        const searchText = document.getElementById('buscarEquipo')?.value.toLowerCase() || '';
+        const tipoFiltro = document.getElementById('filtroTipo')?.value || '';
+        Array.from(equipoBody.rows).forEach(row => {
+            const nombre = row.cells[1]?.querySelector('input')?.value?.toLowerCase() || '';
+            const tipo = row.cells[2]?.querySelector('select')?.value || '';
+            const matchSearch = nombre.includes(searchText);
+            const matchTipo = !tipoFiltro || tipo === tipoFiltro;
+            row.style.display = (matchSearch && matchTipo) ? '' : 'none';
+        });
+    }
 
     function captureFormData() {
         const equipos = [];
         Array.from(equipoBody.rows).forEach(r => {
             equipos.push({
                 equipo: r.cells[1]?.querySelector('input')?.value || '',
-                modelo: r.cells[2]?.querySelector('input')?.value || '',
-                serie: r.cells[3]?.querySelector('input')?.value || '',
-                posicion: r.cells[4]?.querySelector('input')?.value || '',
-                estado: r.cells[5]?.querySelector('select')?.value || 'OK'
+                tipo: r.cells[2]?.querySelector('select')?.value || 'switch',
+                modelo: r.cells[3]?.querySelector('input')?.value || '',
+                serie: r.cells[4]?.querySelector('input')?.value || '',
+                posicion: r.cells[5]?.querySelector('input')?.value || '',
+                altura: r.cells[6]?.querySelector('input')?.value || '1',
+                estado: r.cells[7]?.querySelector('select')?.value || 'OK'
             });
         });
         const patching = [];
@@ -528,6 +553,7 @@
             incidencias: document.getElementById('incidencias')?.value || '',
             firmaTecnico: document.getElementById('firmaTecnico')?.value || '',
             firmaCliente: document.getElementById('firmaCliente')?.value || '',
+            rackOrientation: getRackOrientation(),
             equipos, patching, alimentacion, verificaciones, timestamp: Date.now()
         };
     }
@@ -551,24 +577,17 @@
         if (document.getElementById('incidencias')) document.getElementById('incidencias').value = data.incidencias || '';
         if (document.getElementById('firmaTecnico')) document.getElementById('firmaTecnico').value = data.firmaTecnico || '';
         if (document.getElementById('firmaCliente')) document.getElementById('firmaCliente').value = data.firmaCliente || '';
+        if (data.rackOrientation) {
+            const radio = document.querySelector(`input[name="rackOrientation"][value="${data.rackOrientation}"]`);
+            if (radio) radio.checked = true;
+        }
         equipoBody.innerHTML = '';
-        if (data.equipos?.length) data.equipos.forEach(e => addEquipoRow(e.equipo, e.modelo, e.serie, e.posicion, e.estado));
-        else addEquipoRow('Switch principal', '', '', '', 'OK');
+        if (data.equipos?.length) data.equipos.forEach(e => addEquipoRow(e.equipo, e.tipo, e.modelo, e.serie, e.posicion, e.altura, e.estado));
+        else addEquipoRow('Switch principal', 'switch', '', '', '1', '1', 'OK');
         patchBody.innerHTML = '';
         if (data.patching?.length) data.patching.forEach(p => addPatchRow(p.puertoPP, p.puertoSwitch, p.vlan, p.color, p.obs));
         alimBody.innerHTML = '';
         if (data.alimentacion?.length) data.alimentacion.forEach(a => addAlimRow(a.equipo, a.ups, a.fase, a.obs));
-        if (data.verificaciones) {
-            const vrows = document.querySelectorAll('#tablaVerif tbody tr');
-            vrows.forEach((r, i) => {
-                if (data.verificaciones[i]) {
-                    const sel = r.querySelector('select');
-                    const ins = r.querySelectorAll('input');
-                    if (sel) sel.value = data.verificaciones[i].resultado || 'OK';
-                    if (ins[0]) ins[0].value = data.verificaciones[i].notas || '';
-                }
-            });
-        }
         bindRemoveButtons();
         saveLocal();
         renderRackVisual();
@@ -581,7 +600,6 @@
             localStorage.setItem('rackProject_last', JSON.stringify(data));
             const statusDiv = document.getElementById('statusMsg');
             if (statusDiv) statusDiv.innerHTML = '✅ Guardado local: ' + new Date().toLocaleTimeString();
-            mostrarNotificacion('Datos guardados localmente', 'success');
             return data;
         } catch(e) { console.error(e); return null; }
     }
@@ -589,10 +607,101 @@
     function loadLocal() {
         const last = localStorage.getItem('rackProject_last');
         if (last) { try { loadFormData(JSON.parse(last)); } catch(e) { console.error(e); } }
-        else { addEquipoRow('Switch principal', '', '', '', 'OK'); addPatchRow(); addAlimRow('Switch 1', 'Sí', 'F1', ''); }
+        else { addEquipoRow('Switch principal', 'switch', '', '', '1', '1', 'OK'); addPatchRow(); addAlimRow('Switch 1', 'Sí', 'F1', ''); }
     }
 
-    // ============= GOOGLE SHEETS BÁSICO =============
+    function renderGraficos() {
+        const canvas = document.getElementById('graficoEstado');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const equipos = Array.from(equipoBody.rows);
+        const ok = equipos.filter(r => r.cells[7]?.querySelector('select')?.value === 'OK').length;
+        const error = equipos.filter(r => r.cells[7]?.querySelector('select')?.value === 'Error').length;
+        const total = ok + error || 1;
+        canvas.width = 400; canvas.height = 150;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#28a745';
+        ctx.fillRect(0, 0, (ok / total) * canvas.width, 40);
+        ctx.fillStyle = '#dc3545';
+        ctx.fillRect((ok / total) * canvas.width, 0, (error / total) * canvas.width, 40);
+        ctx.fillStyle = '#000';
+        ctx.font = '12px Arial';
+        ctx.fillText(`✅ OK: ${ok} (${Math.round(ok/total*100)}%)`, 10, 25);
+        ctx.fillText(`❌ Error: ${error} (${Math.round(error/total*100)}%)`, 10, 55);
+        const resumenDiv = document.getElementById('resumenEstadisticas');
+        if (resumenDiv) resumenDiv.innerHTML = `📊 Total equipos: ${total} | OK: ${ok} | Error: ${error}`;
+    }
+
+    function registrarCambio(accion, detalle) {
+        let historial = JSON.parse(localStorage.getItem('rack_historial') || '[]');
+        historial.unshift({
+            fecha: new Date().toLocaleString(),
+            usuario: document.getElementById('tecnico')?.value || 'usuario',
+            accion: accion,
+            detalle: detalle
+        });
+        if (historial.length > 100) historial.pop();
+        localStorage.setItem('rack_historial', JSON.stringify(historial));
+        renderHistorial();
+    }
+
+    function renderHistorial() {
+        let historial = JSON.parse(localStorage.getItem('rack_historial') || '[]');
+        let tbody = document.querySelector('#tablaHistorial tbody');
+        if (tbody) {
+            tbody.innerHTML = '';
+            historial.forEach(h => {
+                let row = tbody.insertRow();
+                row.innerHTML = `<td>${h.fecha}</td><td>${h.usuario}</td><td>${h.accion}</td><td>${h.detalle}</td>`;
+            });
+        }
+    }
+
+    async function generarPDFProfesional() {
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const data = captureFormData();
+            let y = 20;
+            doc.setFontSize(20);
+            doc.setTextColor(10, 36, 114);
+            doc.text("INFORME INSTALACIÓN DE RACK", 20, y);
+            y += 10;
+            doc.setFontSize(11);
+            doc.setTextColor(0, 0, 0);
+            doc.text(`Proyecto: ${data.nombreProyecto || '-'}`, 20, y);
+            doc.text(`Empresa: ${data.empresa || '-'}`, 120, y);
+            y += 7;
+            doc.text(`Técnico: ${data.tecnico || '-'}`, 20, y);
+            doc.text(`Fecha: ${data.fechaInicio || '-'}`, 120, y);
+            y += 10;
+            doc.setFontSize(12);
+            doc.setTextColor(10, 36, 114);
+            doc.text("EQUIPOS INSTALADOS", 20, y);
+            y += 5;
+            let equiposBody = (data.equipos || []).map(e => [e.equipo || '-', e.tipo || '-', e.modelo || '-', e.posicion || '-', `${e.altura || 1}U`, e.estado || '-']);
+            if (equiposBody.length === 0) equiposBody = [['No hay equipos', '', '', '', '', '']];
+            doc.autoTable({
+                startY: y,
+                head: [['Equipo', 'Tipo', 'Modelo', 'U inicio', 'Altura', 'Estado']],
+                body: equiposBody,
+                theme: 'grid',
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [10, 36, 114], textColor: 255 }
+            });
+            y = doc.lastAutoTable.finalY + 10;
+            doc.text(`Incidencias: ${(data.incidencias || '').substring(0, 200)}`, 20, y);
+            y += 10;
+            doc.line(20, y, 80, y);
+            doc.text(data.firmaTecnico || "Técnico", 20, y + 5);
+            doc.line(120, y, 180, y);
+            doc.text(data.firmaCliente || "Cliente", 120, y + 5);
+            doc.save(`informe_${data.nombreProyecto || 'rack'}.pdf`);
+            mostrarNotificacion('PDF generado correctamente', 'success');
+        } catch(e) { mostrarNotificacion('Error al generar PDF', 'error'); console.error(e); }
+    }
+
+    // ============= GOOGLE SHEETS (Básico) =============
     function gapiLoaded() { gapi.load('client', initializeGapiClient); }
     async function initializeGapiClient() { await gapi.client.init({ apiKey: API_KEY, discoveryDocs: DISCOVERY_DOCS }); gapiInited = true; maybeEnableButtons(); }
     function gisLoaded() { tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: '' }); gisInited = true; maybeEnableButtons(); }
@@ -624,18 +733,19 @@
         if (!currentSpreadsheetId) await listOrCreateSheet();
         try {
             const data = captureFormData();
-            const resumenValues = [[data.nombreProyecto, data.empresa, data.tecnico, data.fechaInicio, data.fechaFinPrev, data.estadoProyecto, data.ubicacion, data.rackId, data.tipoRack, data.medidas, data.unidadesU, data.refri, data.numPDU, data.redundante, data.incidencias, new Date().toLocaleString()]];
-            await gapi.client.sheets.spreadsheets.values.update({ spreadsheetId: currentSpreadsheetId, range: 'Resumen!A1:P1', valueInputOption: 'USER_ENTERED', resource: { values: resumenValues } });
+            const resumenValues = [[data.nombreProyecto, data.empresa, data.tecnico, data.fechaInicio, data.fechaFinPrev, data.estadoProyecto, data.ubicacion, data.rackId, data.tipoRack, data.medidas, data.unidadesU, data.refri, data.numPDU, data.redundante, data.incidencias, data.rackOrientation, new Date().toLocaleString()]];
+            await gapi.client.sheets.spreadsheets.values.update({ spreadsheetId: currentSpreadsheetId, range: 'Resumen!A1:Q1', valueInputOption: 'USER_ENTERED', resource: { values: resumenValues } });
             mostrarNotificacion('Guardado en Google Sheets', 'success');
+            registrarCambio('Guardado en Sheets', `Proyecto ${data.nombreProyecto}`);
         } catch (error) { mostrarNotificacion('Error al guardar', 'error'); console.error(error); }
     }
     async function cargarDeSheets() {
         if (!currentSpreadsheetId) await listOrCreateSheet();
         try {
-            const resumen = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: currentSpreadsheetId, range: 'Resumen!A1:P1' });
+            const resumen = await gapi.client.sheets.spreadsheets.values.get({ spreadsheetId: currentSpreadsheetId, range: 'Resumen!A1:Q1' });
             if (resumen.result.values && resumen.result.values[0]) {
                 const vals = resumen.result.values[0];
-                const data = { nombreProyecto: vals[0] || '', empresa: vals[1] || '', tecnico: vals[2] || '', fechaInicio: vals[3] || '', fechaFinPrev: vals[4] || '', estadoProyecto: vals[5] || 'En ejecución', ubicacion: vals[6] || '', rackId: vals[7] || '', tipoRack: vals[8] || 'Abierto', medidas: vals[9] || '', unidadesU: vals[10] || '', refri: vals[11] || 'Sí', numPDU: vals[12] || '', redundante: vals[13] || 'No', incidencias: vals[14] || '', equipos: [] };
+                const data = { nombreProyecto: vals[0] || '', empresa: vals[1] || '', tecnico: vals[2] || '', fechaInicio: vals[3] || '', fechaFinPrev: vals[4] || '', estadoProyecto: vals[5] || 'En ejecución', ubicacion: vals[6] || '', rackId: vals[7] || '', tipoRack: vals[8] || 'Abierto', medidas: vals[9] || '', unidadesU: vals[10] || '', refri: vals[11] || 'Sí', numPDU: vals[12] || '', redundante: vals[13] || 'No', incidencias: vals[14] || '', rackOrientation: vals[15] || 'bottom-up', equipos: [] };
                 loadFormData(data);
                 mostrarNotificacion('Cargado desde Google Sheets', 'success');
             }
@@ -643,14 +753,13 @@
     }
 
     // ============= EVENTOS E INICIALIZACIÓN =============
-    window.addEventListener('load', () => { loadLocal(); setInterval(saveLocal, 30000); renderHistorial(); });
-    window.toggleCollapse = function(el) { const parent = el.parentElement; parent.classList.toggle('collapsed'); const arrow = el.innerHTML.includes('▼') ? '▶' : '▼'; el.innerHTML = el.innerHTML.replace(/[▼▶]/, arrow); };
+    window.addEventListener('load', () => { loadLocal(); setInterval(saveLocal, 30000); renderHistorial(); setupCollapsibleSections(); });
 
     if (document.getElementById('guardarLocal')) document.getElementById('guardarLocal').onclick = () => saveLocal();
     if (document.getElementById('exportarJSON')) document.getElementById('exportarJSON').onclick = () => { const d = captureFormData(); saveAs(new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' }), `proyecto_${d.nombreProyecto || 'rack'}.json`); };
     if (document.getElementById('importarJSON')) document.getElementById('importarJSON').onclick = () => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json'; inp.onchange = e => { const f = e.target.files[0]; const r = new FileReader(); r.onload = ev => loadFormData(JSON.parse(ev.target.result)); r.readAsText(f); }; inp.click(); };
     if (document.getElementById('nuevoProyecto')) document.getElementById('nuevoProyecto').onclick = () => { if (confirm('¿Borrar todo?')) location.reload(); };
-    if (document.getElementById('addEquipo')) document.getElementById('addEquipo').onclick = () => addEquipoRow('Nuevo equipo', '', '', '', 'OK');
+    if (document.getElementById('addEquipo')) document.getElementById('addEquipo').onclick = () => addEquipoRow('Nuevo equipo', 'switch', '', '', '', '1', 'OK');
     if (document.getElementById('addPatch')) document.getElementById('addPatch').onclick = () => addPatchRow();
     if (document.getElementById('addAlim')) document.getElementById('addAlim').onclick = () => addAlimRow('Nuevo equipo', 'No', '', '');
     if (document.getElementById('loginGoogle')) document.getElementById('loginGoogle').onclick = loginGoogle;
@@ -659,12 +768,14 @@
     if (document.getElementById('generarExcel')) document.getElementById('generarExcel').onclick = () => { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([captureFormData()]), "Proyecto"); XLSX.writeFile(wb, `rack_${captureFormData().nombreProyecto || 'proyecto'}.xlsx`); };
     if (document.getElementById('generarWord')) document.getElementById('generarWord').onclick = () => { const content = document.getElementById('app').cloneNode(true); const blob = new Blob([`<html><body>${content.innerHTML}</body></html>`], { type: 'application/msword' }); saveAs(blob, `proyecto_${captureFormData().nombreProyecto || 'rack'}.doc`); };
     if (document.getElementById('generarPDFProfesional')) document.getElementById('generarPDFProfesional').onclick = generarPDFProfesional;
-    if (document.getElementById('crearEquipoDesdeRack')) document.getElementById('crearEquipoDesdeRack').onclick = () => { const u = prompt(`Unidad U (1-${getTotalU()})`, "1"); if (u) editarEquipoDesdeRack(parseInt(u)); };
-    if (document.getElementById('sincronizarEquipos')) document.getElementById('sincronizarEquipos').onclick = sincronizarEquiposConTabla;
+    if (document.getElementById('crearEquipoDesdeRack')) document.getElementById('crearEquipoDesdeRack').onclick = () => { const u = prompt(`Unidad U (1-${getTotalU()})`, "1"); if (u) { const altura = prompt("Altura en U:", "1"); addEquipoRow('Nuevo equipo', 'switch', '', '', u, altura || '1', 'OK'); saveLocal(); } };
+    if (document.getElementById('sincronizarEquipos')) document.getElementById('sincronizarEquipos').onclick = () => { renderRackVisual(); mostrarNotificacion('Esquema sincronizado', 'success'); };
     if (document.getElementById('aplicarFiltro')) document.getElementById('aplicarFiltro').onclick = aplicarFiltros;
     if (document.getElementById('buscarEquipo')) document.getElementById('buscarEquipo').oninput = aplicarFiltros;
-    if (document.getElementById('filtroEstado')) document.getElementById('filtroEstado').onchange = aplicarFiltros;
+    if (document.getElementById('filtroTipo')) document.getElementById('filtroTipo').onchange = aplicarFiltros;
     if (document.getElementById('limpiarHistorial')) document.getElementById('limpiarHistorial').onclick = () => { if (confirm('¿Limpiar historial?')) { localStorage.removeItem('rack_historial'); renderHistorial(); mostrarNotificacion('Historial limpiado', 'info'); } };
+    if (document.getElementById('ordenarEquipos')) document.getElementById('ordenarEquipos').onclick = ordenarEquiposPorPosicion;
+    if (document.getElementById('refrescarRack')) document.getElementById('refrescarRack').onclick = () => { renderRackVisual(); mostrarNotificacion('Orientación actualizada', 'success'); };
     if (document.getElementById('subirImagenes')) document.getElementById('subirImagenes').onchange = function(e) {
         const files = Array.from(e.target.files);
         const galeria = document.getElementById('galeriaPreview');
@@ -674,7 +785,7 @@
                 reader.onload = function(ev) {
                     const img = document.createElement('img');
                     img.src = ev.target.result;
-                    img.className = 'galeria-img';
+                    img.style.cssText = 'width:100px; height:100px; object-fit:cover; border-radius:8px; cursor:pointer; margin:5px; border:2px solid transparent;';
                     img.onclick = () => window.open(ev.target.result);
                     galeria.appendChild(img);
                 };
