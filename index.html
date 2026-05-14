@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rack Installer PRO - Gestor Completo</title>
+    <title>Rack Installer PRO - Con Iconos Personalizables</title>
     <!-- Google API Client Library -->
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client"></script>
@@ -40,18 +40,21 @@
         .sign-item { flex: 1; border-top: 1px solid #000; padding-top: 5px; text-align: center; }
         .add-row-btn { background: #28a745; font-size: 0.75rem; padding: 5px 12px; margin: 5px 0; }
         .remove-row { background: #dc3545; font-size: 0.7rem; padding: 2px 8px; }
+        .icon-preview { width: 24px; height: 24px; object-fit: contain; vertical-align: middle; }
         #userInfo { font-size: 0.8rem; font-weight: bold; }
         footer { text-align: center; margin-top: 30px; font-size: 0.75rem; color: #6c757d; }
         
-        /* Estilos del rack - colores por tipo */
+        /* Estilos del rack */
         .rack-schema { background: #2c3e50; border-radius: 16px; padding: 20px; margin: 15px 0; border: 2px solid #1a252f; }
         .rack-title { color: white; text-align: center; font-weight: bold; margin-bottom: 15px; font-size: 1.1rem; }
         .rack-grid { display: flex; flex-direction: column; border: 3px solid #7f8c8d; border-radius: 8px; overflow: hidden; background: #34495e; }
         .rack-unit { border-bottom: 1px solid #5d6d7e; display: flex; min-height: 40px; }
         .unit-number { width: 45px; background: #1a252f; color: #bdc3c7; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; border-right: 1px solid #5d6d7e; }
-        .unit-equipment { flex: 1; cursor: pointer; transition: 0.1s; display: flex; align-items: center; padding: 0 12px; font-size: 0.75rem; font-weight: 500; border-left: 4px solid transparent; }
+        .unit-equipment { flex: 1; cursor: pointer; transition: 0.1s; display: flex; align-items: center; padding: 0 12px; font-size: 0.75rem; font-weight: 500; border-left: 4px solid transparent; gap: 8px; }
         .unit-equipment:hover { filter: brightness(0.95); }
         .unit-equipment.empty { background: #fdfefe; color: #95a5a6; font-style: italic; justify-content: center; }
+        .unit-equipment .equipment-icon { width: 28px; height: 28px; object-fit: contain; }
+        .unit-equipment .equipment-name { flex: 1; }
         /* Colores por tipo de equipo */
         .unit-equipment.switch { background: #3498db; color: white; border-left-color: #1f618d; }
         .unit-equipment.patch { background: #2ecc71; color: white; border-left-color: #1e8449; }
@@ -83,7 +86,7 @@
 </head>
 <body>
 <div class="container" id="app">
-    <h1>📡 GESTOR DE RACK PRO - CON TODAS LAS MEJORAS</h1>
+    <h1>📡 GESTOR DE RACK PRO - CON ICONOS PERSONALIZABLES</h1>
     
     <div class="toolbar">
         <div class="btn-group">
@@ -157,12 +160,11 @@
             <span><span class="legend-color" style="background:#1abc9c;"></span> Almacenamiento</span>
             <span><span class="legend-color" style="background:#f1c40f;"></span> SAI/UPS</span>
             <span><span class="legend-color" style="background:#16a085;"></span> Pantalla</span>
-            <span><span class="legend-color" style="background:#95a5a6;"></span> Bandeja Rack</span>
-            <span><span class="legend-color" style="background:#d35400;"></span> Regleta/PDU</span>
-            <span><span class="legend-color" style="background:#7f8c8d;"></span> Bandeja Teclado</span>
+            <span><span class="legend-color" style="background:#95a5a6;"></span> Bandeja</span>
+            <span><span class="legend-color" style="background:#d35400;"></span> PDU</span>
+            <span><span class="legend-color" style="background:#7f8c8d;"></span> Teclado</span>
             <span><span class="legend-color" style="background:#5dade2;"></span> Ventilador</span>
             <span><span class="legend-color" style="background:#a569bd;"></span> Cableado</span>
-            <span><span class="legend-color" style="background:#ecf0f1;"></span> Vacío</span>
         </div>
     </div>
 
@@ -191,7 +193,12 @@
             </div>
         </div>
         <table id="tablaEquipos">
-            <thead><tr><th>Nº</th><th>Equipo</th><th>Tipo</th><th>Modelo</th><th>Serie</th><th>U inicio</th><th>Altura (U)</th><th>Estado</th><th>QR</th><th></th></tr></thead>
+            <thead>
+                <tr>
+                    <th>Nº</th><th>Equipo</th><th>Tipo</th><th>Modelo</th><th>Serie</th>
+                    <th>U inicio</th><th>Altura (U)</th><th>Icono</th><th>Estado</th><th>QR</th><th></th>
+                </tr>
+            </thead>
             <tbody></tbody>
         </table>
         <div class="flex-row" style="margin-top:10px;">
@@ -200,6 +207,7 @@
         </div>
     </div>
 
+    <!-- Resto de secciones iguales (patching, alimentación, galería, historial, etc.) -->
     <h2 id="patchingHeader">🔌 PATCHING ▼</h2>
     <div id="patchingContent" class="collapsible-content">
         <table id="tablaPatching"><thead><tr><th>Puerto PP</th><th>Puerto Switch</th><th>VLAN</th><th>Color</th><th>Observaciones</th><th></th></tr></thead><tbody></tbody>能有
@@ -220,7 +228,7 @@
 
     <h2 id="historialHeader">📜 HISTORIAL ▼</h2>
     <div id="historialContent" class="collapsible-content">
-        <table id="tablaHistorial"><thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead><tbody></tbody></table>
+        <table id="tablaHistorial"><thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead><tbody></tbody>能有
         <button id="limpiarHistorial" class="btn-danger">🗑️ Limpiar</button>
     </div>
 
@@ -252,7 +260,7 @@
         <button id="generarExcel">📊 Excel</button>
         <button id="generarWord">📝 Word</button>
     </div>
-    <footer>🔐 Con Google Sheets. Backup automático diario.</footer>
+    <footer>🔐 Con Google Sheets. Backup automático diario. Iconos personalizables por equipo.</footer>
 </div>
 
 <script>
@@ -302,6 +310,21 @@
     const patchBody = document.querySelector('#tablaPatching tbody');
     const alimBody = document.querySelector('#tablaAlimentacion tbody');
 
+    // ============= ICONOS PREDEFINIDOS (Unifi, Ubiquiti, etc.) =============
+    const iconosPredefinidos = [
+        { nombre: 'Unifi Switch 48G2', valor: 'https://raw.githubusercontent.com/ubnt/favicons/master/favicon.ico', tipo: 'switch' },
+        { nombre: 'Unifi Switch 48PoE', valor: 'https://raw.githubusercontent.com/ubnt/favicons/master/favicon.ico', tipo: 'switch' },
+        { nombre: 'Unifi Cloud Gateway Ultra', valor: 'https://raw.githubusercontent.com/ubnt/favicons/master/favicon.ico', tipo: 'router' },
+        { nombre: 'Unifi Dream Machine', valor: 'https://raw.githubusercontent.com/ubnt/favicons/master/favicon.ico', tipo: 'router' },
+        { nombre: 'Switch Genérico', valor: '🔌', tipo: 'switch' },
+        { nombre: 'Servidor Genérico', valor: '🖥️', tipo: 'server' },
+        { nombre: 'Router Genérico', valor: '🌐', tipo: 'router' },
+        { nombre: 'Patch Panel', valor: '🔌', tipo: 'patch' },
+        { nombre: 'SAI/UPS', valor: '⚡', tipo: 'ups' },
+        { nombre: 'Bandeja Rack', valor: '📦', tipo: 'tray' },
+        { nombre: 'Sin icono', valor: '', tipo: '' }
+    ];
+
     // ============= NOTIFICACIONES =============
     function mostrarNotificacion(mensaje, tipo = 'success') {
         const notif = document.createElement('div');
@@ -325,14 +348,6 @@
         return tipos[tipo] || 'switch';
     }
 
-    function getTipoIcono(tipo) {
-        const iconos = {
-            'switch': '🔌', 'patch': '🔌', 'server': '🖥️', 'router': '🌐', 'storage': '💾',
-            'ups': '⚡', 'screen': '🖥️', 'tray': '📦', 'pdu': '🔌', 'keyboard': '⌨️', 'fan': '🌬️', 'cable': '🔗'
-        };
-        return iconos[tipo] || '📡';
-    }
-
     function getTipoNombre(tipo) {
         const nombres = {
             'switch': 'Switch', 'patch': 'Patch Panel', 'server': 'Servidor', 'router': 'Router', 'storage': 'Almacenamiento',
@@ -347,7 +362,7 @@
         return match ? parseInt(match[1]) : 42;
     }
 
-    // ============= RENDERIZADO DEL RACK =============
+    // ============= RENDERIZADO DEL RACK CON ICONOS =============
     function renderRackVisual() {
         const totalU = getTotalU();
         const orientation = getRackOrientation();
@@ -359,7 +374,8 @@
                 modelo: r.cells[3]?.querySelector('input')?.value || '',
                 posicion: parseInt(r.cells[5]?.querySelector('input')?.value) || 0,
                 altura: parseInt(r.cells[6]?.querySelector('input')?.value) || 1,
-                estado: r.cells[7]?.querySelector('select')?.value || 'OK'
+                icono: r.cells[7]?.querySelector('input')?.value || '',
+                estado: r.cells[8]?.querySelector('select')?.value || 'OK'
             });
         });
         
@@ -387,26 +403,39 @@
             const eq = occupied[u];
             let estadoClass = '';
             let displayText = '';
+            let iconHtml = '';
             
             if (eq) {
                 const tipoClass = getTipoClass(eq.tipo);
                 estadoClass = eq.estado === 'Error' ? 'error' : tipoClass;
+                
+                if (eq.icono && (eq.icono.startsWith('http') || eq.icono.startsWith('data:'))) {
+                    iconHtml = `<img class="equipment-icon" src="${eq.icono}" alt="icono" onerror="this.style.display='none'">`;
+                } else if (eq.icono && eq.icono.length <= 5) {
+                    iconHtml = `<span class="equipment-icon" style="font-size:20px;">${eq.icono}</span>`;
+                } else {
+                    const iconoPorTipo = { 'switch': '🔌', 'patch': '🔌', 'server': '🖥️', 'router': '🌐', 'storage': '💾', 'ups': '⚡', 'screen': '🖥️', 'tray': '📦', 'pdu': '🔌', 'keyboard': '⌨️', 'fan': '🌬️', 'cable': '🔗' };
+                    iconHtml = `<span class="equipment-icon" style="font-size:20px;">${iconoPorTipo[eq.tipo] || '📡'}</span>`;
+                }
+                
                 if (!eq.esInicio && eq.alturaRestante > 1) {
                     displayText = `↕️ Continúa ${eq.nombre}`;
+                    iconHtml = '';
                 } else {
-                    const icono = getTipoIcono(eq.tipo);
-                    displayText = `${icono} ${eq.nombre} ${eq.altura > 1 ? `(${eq.altura}U)` : ''}`;
+                    displayText = eq.nombre;
                 }
                 if (eq.estado === 'Error') estadoClass = 'error';
             } else {
                 estadoClass = 'empty';
                 displayText = `U${u} - Vacío`;
+                iconHtml = '';
             }
             
             html += `<div class="rack-unit">
                 <div class="unit-number">U${u}</div>
                 <div class="unit-equipment ${estadoClass}" onclick="editarEquipoDesdeRack(${u})">
-                    ${displayText}
+                    ${iconHtml}
+                    <span class="equipment-name">${escapeHtml(displayText)} ${eq && eq.altura > 1 ? `(${eq.altura}U)` : ''}</span>
                 </div>
             </div>`;
         }
@@ -415,13 +444,84 @@
     }
 
     // ============= FUNCIONES PRINCIPALES =============
-    function addEquipoRow(equipo = '', tipo = 'switch', modelo = '', serie = '', posicion = '', altura = '1', estado = 'OK') {
+    function mostrarSelectorIcono(rowIndex, currentIcon) {
+        return new Promise((resolve) => {
+            let opciones = iconosPredefinidos.map(ico => 
+                `<option value="${escapeHtml(ico.valor)}" data-tipo="${ico.tipo}">${ico.nombre}</option>`
+            ).join('');
+            
+            const modalHtml = `
+                <div id="iconSelectorModal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:10000;">
+                    <div style="background:white; border-radius:16px; padding:20px; max-width:400px; width:90%;">
+                        <h3>Seleccionar icono</h3>
+                        <select id="iconSelect" style="width:100%; padding:8px; margin:10px 0;">
+                            <option value="">-- Ninguno --</option>
+                            ${opciones}
+                            <option value="custom">-- Subir imagen personalizada --</option>
+                        </select>
+                        <div id="customIconUpload" style="display:none; margin:10px 0;">
+                            <input type="file" id="customIconFile" accept="image/png,image/jpeg,image/gif,image/svg+xml">
+                        </div>
+                        <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:15px;">
+                            <button id="cancelIconBtn">Cancelar</button>
+                            <button id="acceptIconBtn" style="background:#28a745;">Aceptar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            const select = document.getElementById('iconSelect');
+            const customDiv = document.getElementById('customIconUpload');
+            const acceptBtn = document.getElementById('acceptIconBtn');
+            const cancelBtn = document.getElementById('cancelIconBtn');
+            
+            if (currentIcon && !currentIcon.startsWith('data:')) {
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].value === currentIcon) {
+                        select.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+            
+            select.onchange = () => {
+                customDiv.style.display = select.value === 'custom' ? 'block' : 'none';
+            };
+            
+            acceptBtn.onclick = () => {
+                let selectedValue = select.value;
+                if (selectedValue === 'custom') {
+                    const fileInput = document.getElementById('customIconFile');
+                    if (fileInput.files && fileInput.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            document.body.removeChild(document.getElementById('iconSelectorModal'));
+                            resolve(e.target.result);
+                        };
+                        reader.readAsDataURL(fileInput.files[0]);
+                        return;
+                    }
+                }
+                document.body.removeChild(document.getElementById('iconSelectorModal'));
+                resolve(selectedValue === '' ? null : selectedValue);
+            };
+            
+            cancelBtn.onclick = () => {
+                document.body.removeChild(document.getElementById('iconSelectorModal'));
+                resolve(null);
+            };
+        });
+    }
+
+    async function addEquipoRow(equipo = '', tipo = 'switch', modelo = '', serie = '', posicion = '', altura = '1', icono = '', estado = 'OK') {
         let row = equipoBody.insertRow();
         let num = equipoBody.rows.length;
         row.innerHTML = `
             <td>${num}</td>
             <td><input value="${escapeHtml(equipo)}"></td>
-            <td><select id="tipoSelect_${num}">
+            <td><select>
                 <option value="switch" ${tipo==='switch'?'selected':''}>🔌 Switch</option>
                 <option value="patch" ${tipo==='patch'?'selected':''}>🔌 Patch Panel</option>
                 <option value="server" ${tipo==='server'?'selected':''}>🖥️ Servidor</option>
@@ -439,12 +539,32 @@
             <td><input value="${escapeHtml(serie)}"></td>
             <td><input value="${escapeHtml(posicion)}" type="number" step="1" style="width:70px"></td>
             <td><input value="${escapeHtml(altura)}" type="number" step="1" min="1" max="20" style="width:70px"></td>
+            <td><input type="text" value="${escapeHtml(icono)}" style="width:40px; font-size:1.2rem;" placeholder="🔌" readonly>
+            <td style="text-align:center;"><button class="select-icon-btn" data-row="${num}" style="background:#3498db; padding:2px 6px;">🎨</button></td>
             <td><select>${estado === 'OK' ? '<option selected>OK</option><option>Error</option>' : '<option>OK</option><option selected>Error</option>'}</select></td>
             <td class="qr-cell"></td>
             <td><button class="remove-row">🗑️</button></td>
         `;
-        const qrCell = row.cells[8];
+        
+        // Actualizar QR
+        const qrCell = row.cells[10];
         if (qrCell) qrCell.appendChild(generarQR(equipo, serie, posicion));
+        
+        // Configurar selector de icono
+        const selectBtn = row.querySelector('.select-icon-btn');
+        const iconInput = row.cells[7]?.querySelector('input');
+        if (selectBtn && iconInput) {
+            selectBtn.onclick = async () => {
+                const newIcon = await mostrarSelectorIcono(num, iconInput.value);
+                if (newIcon !== null) {
+                    iconInput.value = newIcon;
+                    saveLocal();
+                    renderRackVisual();
+                    mostrarNotificacion('Icono actualizado', 'success');
+                }
+            };
+        }
+        
         bindRemoveButtons();
         renumEquipos();
         renderRackVisual();
@@ -488,26 +608,31 @@
         return qrDiv;
     }
 
-    window.editarEquipoDesdeRack = function(u) {
+    window.editarEquipoDesdeRack = async function(u) {
         let equiposRows = Array.from(equipoBody.rows);
         let equipoEncontrado = null;
+        let rowIndex = -1;
         for (let i = 0; i < equiposRows.length; i++) {
             let posInput = equiposRows[i].cells[5]?.querySelector('input');
-            if (posInput && parseInt(posInput.value) === u) { equipoEncontrado = equiposRows[i]; break; }
+            if (posInput && parseInt(posInput.value) === u) { equipoEncontrado = equiposRows[i]; rowIndex = i; break; }
         }
         if (equipoEncontrado) {
             const nombre = equipoEncontrado.cells[1]?.querySelector('input')?.value || '';
             const nuevoNombre = prompt(`Editar equipo en U${u}`, nombre);
             if (nuevoNombre && nuevoNombre.trim() !== '') {
                 equipoEncontrado.cells[1].querySelector('input').value = nuevoNombre;
-                const tiposDisponibles = ['switch', 'patch', 'server', 'router', 'storage', 'ups', 'screen', 'tray', 'pdu', 'keyboard', 'fan', 'cable'];
-                const nuevoTipo = prompt(`Tipo (${tiposDisponibles.join('/')}):`, equipoEncontrado.cells[2]?.querySelector('select')?.value || 'switch');
-                if (nuevoTipo && tiposDisponibles.includes(nuevoTipo)) 
-                    equipoEncontrado.cells[2].querySelector('select').value = nuevoTipo;
                 const nuevoModelo = prompt("Modelo:", equipoEncontrado.cells[3]?.querySelector('input')?.value || '');
                 if (nuevoModelo !== null) equipoEncontrado.cells[3].querySelector('input').value = nuevoModelo;
                 const nuevaAltura = prompt("Altura en U (1-20):", equipoEncontrado.cells[6]?.querySelector('input')?.value || '1');
                 if (nuevaAltura !== null) equipoEncontrado.cells[6].querySelector('input').value = nuevaAltura;
+                
+                // Opción para cambiar icono
+                if (confirm("¿Cambiar icono?")) {
+                    const iconInput = equipoEncontrado.cells[7]?.querySelector('input');
+                    const newIcon = await mostrarSelectorIcono(rowIndex, iconInput?.value || '');
+                    if (newIcon !== null && iconInput) iconInput.value = newIcon;
+                }
+                
                 saveLocal();
                 renderRackVisual();
                 renderGraficos();
@@ -519,7 +644,11 @@
                 const altura = prompt("Altura en U:", "1");
                 const tiposDisponibles = ['switch', 'patch', 'server', 'router', 'storage', 'ups', 'screen', 'tray', 'pdu', 'keyboard', 'fan', 'cable'];
                 const tipo = prompt(`Tipo (${tiposDisponibles.join('/')}):`, 'switch');
-                addEquipoRow(nombre, (tipo && tiposDisponibles.includes(tipo)) ? tipo : 'switch', '', '', u.toString(), altura || '1', 'OK');
+                
+                // Seleccionar icono
+                const icono = await mostrarSelectorIcono(-1, '');
+                
+                addEquipoRow(nombre, (tipo && tiposDisponibles.includes(tipo)) ? tipo : 'switch', '', '', u.toString(), altura || '1', icono || '', 'OK');
                 saveLocal();
             }
         }
@@ -561,7 +690,8 @@
                 serie: r.cells[4]?.querySelector('input')?.value || '',
                 posicion: r.cells[5]?.querySelector('input')?.value || '',
                 altura: r.cells[6]?.querySelector('input')?.value || '1',
-                estado: r.cells[7]?.querySelector('select')?.value || 'OK'
+                icono: r.cells[7]?.querySelector('input')?.value || '',
+                estado: r.cells[9]?.querySelector('select')?.value || 'OK'  // Cambiado índice por nueva columna
             });
         });
         const patching = [];
@@ -629,8 +759,13 @@
             if (radio) radio.checked = true;
         }
         equipoBody.innerHTML = '';
-        if (data.equipos?.length) data.equipos.forEach(e => addEquipoRow(e.equipo, e.tipo, e.modelo, e.serie, e.posicion, e.altura, e.estado));
-        else addEquipoRow('Switch principal', 'switch', '', '', '1', '1', 'OK');
+        if (data.equipos?.length) {
+            for (let e of data.equipos) {
+                await addEquipoRow(e.equipo, e.tipo, e.modelo, e.serie, e.posicion, e.altura, e.icono || '', e.estado);
+            }
+        } else {
+            addEquipoRow('Switch principal', 'switch', '', '', '1', '1', '', 'OK');
+        }
         patchBody.innerHTML = '';
         if (data.patching?.length) data.patching.forEach(p => addPatchRow(p.puertoPP, p.puertoSwitch, p.vlan, p.color, p.obs));
         alimBody.innerHTML = '';
@@ -654,7 +789,7 @@
     function loadLocal() {
         const last = localStorage.getItem('rackProject_last');
         if (last) { try { loadFormData(JSON.parse(last)); } catch(e) { console.error(e); } }
-        else { addEquipoRow('Switch principal', 'switch', '', '', '1', '1', 'OK'); addPatchRow(); addAlimRow('Switch 1', 'Sí', 'F1', ''); }
+        else { addEquipoRow('Switch principal', 'switch', '', '', '1', '1', '', 'OK'); addPatchRow(); addAlimRow('Switch 1', 'Sí', 'F1', ''); }
     }
 
     function renderGraficos() {
@@ -662,8 +797,8 @@
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const equipos = Array.from(equipoBody.rows);
-        const ok = equipos.filter(r => r.cells[7]?.querySelector('select')?.value === 'OK').length;
-        const error = equipos.filter(r => r.cells[7]?.querySelector('select')?.value === 'Error').length;
+        const ok = equipos.filter(r => r.cells[9]?.querySelector('select')?.value === 'OK').length;
+        const error = equipos.filter(r => r.cells[9]?.querySelector('select')?.value === 'Error').length;
         const total = ok + error || 1;
         canvas.width = 400; canvas.height = 150;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -806,7 +941,7 @@
     if (document.getElementById('exportarJSON')) document.getElementById('exportarJSON').onclick = () => { const d = captureFormData(); saveAs(new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' }), `proyecto_${d.nombreProyecto || 'rack'}.json`); };
     if (document.getElementById('importarJSON')) document.getElementById('importarJSON').onclick = () => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json'; inp.onchange = e => { const f = e.target.files[0]; const r = new FileReader(); r.onload = ev => loadFormData(JSON.parse(ev.target.result)); r.readAsText(f); }; inp.click(); };
     if (document.getElementById('nuevoProyecto')) document.getElementById('nuevoProyecto').onclick = () => { if (confirm('¿Borrar todo?')) location.reload(); };
-    if (document.getElementById('addEquipo')) document.getElementById('addEquipo').onclick = () => addEquipoRow('Nuevo equipo', 'switch', '', '', '', '1', 'OK');
+    if (document.getElementById('addEquipo')) document.getElementById('addEquipo').onclick = async () => addEquipoRow('Nuevo equipo', 'switch', '', '', '', '1', '', 'OK');
     if (document.getElementById('addPatch')) document.getElementById('addPatch').onclick = () => addPatchRow();
     if (document.getElementById('addAlim')) document.getElementById('addAlim').onclick = () => addAlimRow('Nuevo equipo', 'No', '', '');
     if (document.getElementById('loginGoogle')) document.getElementById('loginGoogle').onclick = loginGoogle;
@@ -815,7 +950,7 @@
     if (document.getElementById('generarExcel')) document.getElementById('generarExcel').onclick = () => { const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([captureFormData()]), "Proyecto"); XLSX.writeFile(wb, `rack_${captureFormData().nombreProyecto || 'proyecto'}.xlsx`); };
     if (document.getElementById('generarWord')) document.getElementById('generarWord').onclick = () => { const content = document.getElementById('app').cloneNode(true); const blob = new Blob([`<html><body>${content.innerHTML}</body></html>`], { type: 'application/msword' }); saveAs(blob, `proyecto_${captureFormData().nombreProyecto || 'rack'}.doc`); };
     if (document.getElementById('generarPDFProfesional')) document.getElementById('generarPDFProfesional').onclick = generarPDFProfesional;
-    if (document.getElementById('crearEquipoDesdeRack')) document.getElementById('crearEquipoDesdeRack').onclick = () => { const u = prompt(`Unidad U (1-${getTotalU()})`, "1"); if (u) { const altura = prompt("Altura en U:", "1"); const tiposDisponibles = ['switch', 'patch', 'server', 'router', 'storage', 'ups', 'screen', 'tray', 'pdu', 'keyboard', 'fan', 'cable']; const tipo = prompt(`Tipo (${tiposDisponibles.join('/')}):`, 'switch'); addEquipoRow('Nuevo equipo', (tipo && tiposDisponibles.includes(tipo)) ? tipo : 'switch', '', '', u, altura || '1', 'OK'); saveLocal(); } };
+    if (document.getElementById('crearEquipoDesdeRack')) document.getElementById('crearEquipoDesdeRack').onclick = async () => { const u = prompt(`Unidad U (1-${getTotalU()})`, "1"); if (u) { const altura = prompt("Altura en U:", "1"); const tiposDisponibles = ['switch', 'patch', 'server', 'router', 'storage', 'ups', 'screen', 'tray', 'pdu', 'keyboard', 'fan', 'cable']; const tipo = prompt(`Tipo (${tiposDisponibles.join('/')}):`, 'switch'); const icono = await mostrarSelectorIcono(-1, ''); addEquipoRow('Nuevo equipo', (tipo && tiposDisponibles.includes(tipo)) ? tipo : 'switch', '', '', u, altura || '1', icono || '', 'OK'); saveLocal(); } };
     if (document.getElementById('sincronizarEquipos')) document.getElementById('sincronizarEquipos').onclick = () => { renderRackVisual(); mostrarNotificacion('Esquema sincronizado', 'success'); };
     if (document.getElementById('aplicarFiltro')) document.getElementById('aplicarFiltro').onclick = aplicarFiltros;
     if (document.getElementById('buscarEquipo')) document.getElementById('buscarEquipo').oninput = aplicarFiltros;
